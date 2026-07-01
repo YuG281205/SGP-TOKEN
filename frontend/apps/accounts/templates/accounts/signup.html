@@ -1,13 +1,17 @@
+{%load static%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup Page | SGP </title>
+    
 </head>
+
 <body>
     <h1>Signup Page</h1>
-    <form method="POST" action="{% url 'signup' %}">
+    
+    <form id="signupform">
         {% csrf_token %}
         <label for="Username">Username:</label>
         <input type="text" id="Username" name="Username" required><br><br>
@@ -20,5 +24,6 @@
         <a href="{% url 'login' %}">Already have an account? Login here.</a><br><br>
         <button type="submit">Sign Up</button>
     </form>
+    <script src="{% static 'C:\Users\yugjh\Desktop\SGP-TOKEN\frontend\static\js\signup.js' %}"></script>
 </body>
 </html>
