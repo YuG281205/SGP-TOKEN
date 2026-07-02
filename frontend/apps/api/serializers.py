@@ -50,6 +50,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+from rest_framework import serializers
+from django.contrib.auth import authenticate
+
+
 class LoginSerializer(serializers.Serializer):
 
     username = serializers.CharField()
@@ -68,11 +72,6 @@ class LoginSerializer(serializers.Serializer):
         if user is None:
             raise serializers.ValidationError({
                 "message": "Invalid username or password."
-            })
-
-        if not user.is_active:
-            raise serializers.ValidationError({
-                "message": "Please verify your email before logging in."
             })
 
         attrs["user"] = user

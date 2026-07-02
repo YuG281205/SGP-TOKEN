@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Failed | SGP</title>
+
+    <script>
+        let seconds = 10;
+
+        function countdown() {
+
+            document.getElementById("countdown").innerHTML = seconds;
+
+            if (seconds === 0) {
+                window.location.href = "/login/";
+                return;
+            }
+
+            seconds--;
+        }
+
+        window.onload = function () {
+
+            countdown();
+
+            setInterval(countdown, 1000);
+
+        };
+    </script>
+</head>
+
+<body>
+
+    <h1>❌ Email Verification Failed</h1>
+
+    <p>
+        The verification link is invalid or has expired.
+    </p>
+
+    <p>
+        Please register again or request a new verification email.
+    </p>
+
+    <p>
+        Redirecting to the Login page in
+        <strong id="countdown">10</strong>
+        seconds...
+    </p>
+
+    <br>
+
+    <a href="/login/">
+        <button>Go to Login</button>
+    </a>
+
+</body>
+</html>

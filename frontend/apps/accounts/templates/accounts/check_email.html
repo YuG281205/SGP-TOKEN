@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Your Email | SGP</title>
+
+    <script>
+        let seconds = 10;
+
+        function countdown() {
+
+            document.getElementById("countdown").innerHTML = seconds;
+
+            if (seconds === 0) {
+                window.location.href = "/login/";
+                return;
+            }
+
+            seconds--;
+        }
+
+        window.onload = function () {
+
+            countdown();
+
+            setInterval(countdown, 1000);
+
+        };
+    </script>
+</head>
+
+<body>
+
+    <h1>📧 Check Your Email</h1>
+
+    <p>
+        We have sent a verification link to your email address.
+    </p>
+
+    <p>
+        Please verify your email before logging in.
+    </p>
+
+    <p>
+        Redirecting to the Login page in
+        <strong id="countdown">10</strong>
+        seconds...
+    </p>
+
+    <br>
+
+    <a href="/login/">
+        <button>Go to Login</button>
+    </a>
+
+</body>
+</html>

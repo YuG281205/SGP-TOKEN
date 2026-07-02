@@ -14,10 +14,8 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         },
 
         body: JSON.stringify({
-
             username: username,
             password: password
-
         })
 
     });
@@ -29,14 +27,20 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         localStorage.setItem("access", data.access);
         localStorage.setItem("refresh", data.refresh);
 
-        alert("Login Successful");
+        alert(data.message);
 
         window.location.href = "/dashboard/";
 
     } else {
 
-        alert(data.non_field_errors || "Login Failed");
+        if (data.message) {
+            alert(data.message);
+        }
+        else {
+            alert("Login Failed");
+        }
 
+        console.log(data);
     }
 
 });

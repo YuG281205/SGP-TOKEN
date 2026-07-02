@@ -21,7 +21,7 @@ document.getElementById('signupform').addEventListener("submit",async function (
 
     if (response.ok) {
     alert("Registration Successful");
-    window.location.href = "/login/";
+    window.location.href = "/check_email/";
 } else {
 
     if (data.username) {
