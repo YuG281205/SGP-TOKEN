@@ -26,6 +26,8 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
         localStorage.setItem("access", data.access);
         localStorage.setItem("refresh", data.refresh);
+        localStorage.setItem("username", data.username);
+        localStorage.setItem("email", data.email);
 
         alert(data.message);
 

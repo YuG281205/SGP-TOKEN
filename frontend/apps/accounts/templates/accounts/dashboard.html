@@ -1,12 +1,226 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>AI Token Optimizer | Dashboard</title>
+
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <script src="{% static 'js/dashboard.js' %}" defer></script>
 </head>
 <body>
-    <h1>Dashboard</h1>
-    <p>Welcome to your dashboard!</p>
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="navbar">
+
+        <div class="logo-section">
+            <h2>AI Token Optimizer</h2>
+        </div>
+
+        <div class="user-section">
+            <span>Welcome, <strong id="username">User</strong></span>
+            <button id="logoutBtn">Logout</button>
+        </div>
+
+    </header>
+
+    <!-- ================= MAIN CONTAINER ================= -->
+    <div class="container">
+
+        <!-- ============== SIDEBAR ============== -->
+
+        <aside class="sidebar">
+
+            <ul>
+
+                <li><a href="#">🏠 Dashboard</a></li>
+
+                <li><a href="#">📝 Prompt Optimizer</a></li>
+
+                <li><a href="#">📜 History</a></li>
+
+                <li><a href="#">⭐ Favorites</a></li>
+
+                <li><a href="#">📊 Analytics</a></li>
+
+                <li><a href="#">⚙ Settings</a></li>
+
+            </ul>
+
+        </aside>
+
+        <!-- ============== MAIN CONTENT ============== -->
+
+        <main class="content">
+
+            <!-- Welcome Card -->
+
+            <section class="welcome-card">
+
+                <h1>Hello, <span id="welcomeUser">User</span> 👋</h1>
+
+                <p>
+                    Optimize your AI prompts, reduce token usage,
+                    and save API costs.
+                </p>
+
+            </section>
+
+            <!-- Prompt Input -->
+
+            <section class="prompt-section">
+
+                <h2>Prompt Optimizer</h2>
+
+                <textarea
+                    id="prompt"
+                    rows="10"
+                    placeholder="Enter your prompt here..."></textarea>
+
+            </section>
+
+            <!-- AI Model -->
+
+            <section class="model-section">
+
+                <label>Select AI Model</label>
+
+                <select id="model">
+
+                    <option value="">Choose Model</option>
+
+                    <option value="gpt-4o">OpenAI GPT-4o</option>
+
+                    <option value="gpt-4.1">OpenAI GPT-4.1</option>
+
+                    <option value="claude">Claude</option>
+
+                    <option value="gemini">Gemini</option>
+
+                    <option value="deepseek">DeepSeek</option>
+
+                    <option value="llama">Llama</option>
+
+                </select>
+
+            </section>
+
+            <!-- Optimization Level -->
+
+            <section class="optimization-section">
+
+                <h3>Optimization Level</h3>
+
+                <label>
+                    <input
+                        type="radio"
+                        name="optimization"
+                        value="light">
+                    Light
+                </label>
+
+                <label>
+                    <input
+                        type="radio"
+                        name="optimization"
+                        value="balanced"
+                        checked>
+                    Balanced
+                </label>
+
+                <label>
+                    <input
+                        type="radio"
+                        name="optimization"
+                        value="aggressive">
+                    Aggressive
+                </label>
+
+            </section>
+
+            <!-- Buttons -->
+
+            <section class="button-section">
+
+                <button id="optimizeBtn">
+                    Optimize Prompt
+                </button>
+
+                <button id="clearBtn">
+                    Clear
+                </button>
+
+            </section>
+
+            <!-- Statistics -->
+
+            <section class="stats-section">
+
+                <div class="card">
+                    <h3>Original Tokens</h3>
+                    <h2 id="originalTokens">0</h2>
+                </div>
+
+                <div class="card">
+                    <h3>Optimized Tokens</h3>
+                    <h2 id="optimizedTokens">0</h2>
+                </div>
+
+                <div class="card">
+                    <h3>Tokens Saved</h3>
+                    <h2 id="savedTokens">0</h2>
+                </div>
+
+                <div class="card">
+                    <h3>Estimated Cost Saved</h3>
+                    <h2 id="savedCost">$0.00</h2>
+                </div>
+
+            </section>
+
+            <!-- Optimized Prompt -->
+
+            <section class="result-section">
+
+                <h2>Optimized Prompt</h2>
+
+                <textarea
+                    id="optimizedPrompt"
+                    rows="10"
+                    readonly></textarea>
+
+                <div>
+
+                    <button id="copyBtn">
+                        Copy
+                    </button>
+
+                    <button id="downloadBtn">
+                        Download
+                    </button>
+
+                </div>
+
+            </section>
+
+            <!-- History -->
+
+            <section class="history-section">
+
+                <h2>Recent History</h2>
+
+                <div id="historyContainer">
+
+                    <p>No history available.</p>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
 </body>
 </html>
