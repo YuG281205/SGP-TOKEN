@@ -12,6 +12,17 @@ class PromptHistory(models.Model):
         ("deepseek", "DeepSeek"),
         ("llama", "Llama"),
     ]
+    STATUS_CHOICES = [
+    ("pending", "Pending"),
+    ("completed", "Completed"),
+    ("failed", "Failed"),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending"
+    )
 
     OPTIMIZATION_LEVELS = [
         ("light", "Light"),
@@ -69,6 +80,7 @@ class PromptHistory(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True
     )
+    
 
     def __str__(self):
         return f"{self.user.username} | {self.ai_model} | {self.created_at.strftime('%d-%m-%Y %H:%M')}"

@@ -1,28 +1,32 @@
-document.addEventListener("DOMContentLoaded", () => {
+console.log("Dashboard JS Loaded");
+const optimizeBtn = document.getElementById("optimizeBtn");
 
-    // Check if user is logged in
+optimizeBtn.addEventListener("click", async () => {
+
+    const originalPrompt = document.getElementById("prompt").value.trim();
+
+    const aiModel = document.getElementById("model").value;
+
+    const optimizationLevel = document.querySelector(
+        'input[name="optimization"]:checked'
+    ).value;
+
     const accessToken = localStorage.getItem("access");
+    console.log(accessToken);
+    const response = await fetch("http://127.0.0.1:8000/api/save-prompt/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+            original_prompt: originalPrompt,
+            ai_model: aiModel,
+            optimization_level: optimizationLevel
+        })
+    });
 
-    if (!accessToken) {
-        alert("Please login first.");
-        window.location.href = "/login/";
-        return;
-    }
+    const result = await response.json();
 
-    // Get user details
-    const username = localStorage.getItem("username");
-    const email = localStorage.getItem("email");
-
-    // Display username
-    const usernameElement = document.getElementById("username");
-    if (usernameElement) {
-        usernameElement.textContent = username || "User";
-    }
-
-    // Display email (optional)
-    const emailElement = document.getElementById("email");
-    if (emailElement) {
-        emailElement.textContent = email || "";
-    }
-
+    console.log(result);
 });

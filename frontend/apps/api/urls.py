@@ -1,5 +1,6 @@
 from django.urls import path, include
 from .views import TestAPIView,RegisterAPIView,VerifyEmailAPIView,LoginAPIView
+
 urlpatterns = [
     path('test/', TestAPIView.as_view(), name='test_api'),
     path('register/',RegisterAPIView.as_view(),name='register_api'),
@@ -9,4 +10,5 @@ urlpatterns = [
         name="verify-email",
     ),
     path("login/", LoginAPIView.as_view(), name="api-login"),
+    
 ]
