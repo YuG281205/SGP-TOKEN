@@ -57,11 +57,16 @@ class PromptHistory(models.Model):
         default="balanced"
     )
 
-    original_tokens = models.PositiveIntegerField(default=0)
+    original_input_tokens = models.PositiveIntegerField(default=0)
+    original_output_tokens = models.PositiveIntegerField(default=0)
 
-    optimized_tokens = models.PositiveIntegerField(default=0)
+    optimized_input_tokens = models.PositiveIntegerField(default=0)
+    optimized_output_tokens = models.PositiveIntegerField(default=0)
 
-    tokens_saved = models.PositiveIntegerField(default=0)
+    original_total_tokens = models.PositiveIntegerField(default=0)
+    optimized_total_tokens = models.PositiveIntegerField(default=0)
+
+    tokens_saved = models.IntegerField(default=0)
 
     estimated_cost_saved = models.DecimalField(
         max_digits=10,
