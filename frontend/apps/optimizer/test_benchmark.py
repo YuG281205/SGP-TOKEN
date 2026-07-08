@@ -1,6 +1,6 @@
 from benchmark import GeminiBenchmark
-
-API_KEY = "AQ.Ab8RN6Kd7CQzwGkLldb9eZ6V7s_rWzzxgUkqnoLYFJAGmC-qiw"
+import os 
+API_KEY = os.getenv("GEMINI_API_KEY")
 
 benchmark = GeminiBenchmark(API_KEY)
 
