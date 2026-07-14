@@ -3,31 +3,45 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import PromptHistorySerializer
+from .serializers import OptimizePromptSerializer
+from .services.optimizer_service import OptimizerService
 
 
-class SavePromptAPIView(APIView):
+class OptimizePromptAPIView(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        print("Request Data:", request.data)
-        print("User:", request.user)
 
-        serializer = PromptHistorySerializer(
-            data=request.data,
-            context={"request": request}
+        serializer = OptimizePromptSerializer(
+            data=request.data
         )
 
-        print("Is Valid:", serializer.is_valid())
+        serializer.is_valid(raise_exception=True)
 
-        if serializer.is_valid():
-            prompt = serializer.save()
-            print("Saved ID:", prompt.id)
+        data = serializer.validated_data
 
-            return Response({
-                "message": "Saved successfully"
-            })
+        service = OptimizerService()
 
-        print(serializer.errors)
+        result = service.optimize(
 
-        return Response(serializer.errors, status=400)
+            user=request.user,
+
+            prompt=data["prompt"],
+
+            optimization_level=data["optimization_level"],
+
+            provider=data["ai_model"],
+
+        )
+
+        if result["success"]:
+            return Response(
+                result,
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            result,
+            status=status.HTTP_400_BAD_REQUEST
+        )

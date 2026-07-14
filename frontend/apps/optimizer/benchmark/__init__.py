@@ -1,3 +1,2 @@
-from .openai_benchmark import OpenAIBenchmark
-from .gemini_benchmark import GeminiBenchmark
-
+from .LLMBenchmark import GeminiBenchmark
+from .local_benchmark import LocalBenchmark

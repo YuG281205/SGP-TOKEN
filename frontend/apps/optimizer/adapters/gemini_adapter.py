@@ -1,23 +1,20 @@
-"""
-Gemini LLM Adapter
-
-This adapter is responsible only for communicating
-with Google's Gemini API.
-"""
-
 import os
 import time
 
 from dotenv import load_dotenv
 from google import genai
 
-from adapters.base_adapter import BaseLLMAdapter
-
+from optimizer.adapters.base_adapter import BaseLLMAdapter
 
 load_dotenv()
 
 
 class GeminiAdapter(BaseLLMAdapter):
+    """
+    Gemini Adapter
+
+    Responsible only for communicating with Gemini API.
+    """
 
     def __init__(self):
 
@@ -25,13 +22,13 @@ class GeminiAdapter(BaseLLMAdapter):
         self.model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
         if not self.api_key:
-            raise ValueError("GEMINI_API_KEY not found in .env")
+            raise ValueError("GEMINI_API_KEY not found.")
 
         self.client = genai.Client(api_key=self.api_key)
 
     def optimize(self, prompt: str) -> dict:
 
-        start_time = time.time()
+        start_time = time.perf_counter()
 
         try:
 
@@ -40,26 +37,58 @@ class GeminiAdapter(BaseLLMAdapter):
                 contents=prompt,
             )
 
-            execution_time = round(time.time() - start_time, 2)
+            latency = round(time.perf_counter() - start_time, 3)
+
+            usage = response.usage_metadata
 
             return {
+
                 "success": True,
+
                 "provider": "Gemini",
+
                 "model": self.model,
+
                 "optimized_prompt": response.text.strip(),
-                "execution_time": execution_time,
+
+                "usage": {
+
+                    "input_tokens": usage.prompt_token_count,
+
+                    "output_tokens": usage.candidates_token_count,
+
+                    "total_tokens": usage.total_token_count,
+                },
+
+                "execution_time": latency,
+
                 "error": None,
             }
 
         except Exception as e:
 
-            execution_time = round(time.time() - start_time, 2)
+            latency = round(time.perf_counter() - start_time, 3)
 
             return {
+
                 "success": False,
+
                 "provider": "Gemini",
+
                 "model": self.model,
+
                 "optimized_prompt": "",
-                "execution_time": execution_time,
+
+                "usage": {
+
+                    "input_tokens": 0,
+
+                    "output_tokens": 0,
+
+                    "total_tokens": 0,
+                },
+
+                "execution_time": latency,
+
                 "error": str(e),
             }
