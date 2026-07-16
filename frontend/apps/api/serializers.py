@@ -64,6 +64,18 @@ class LoginSerializer(serializers.Serializer):
         username = attrs.get("username")
         password = attrs.get("password")
 
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({
+                "message": "Invalid username or password."
+            })
+
+        if not user.is_active:
+            raise serializers.ValidationError({
+                "message": "Please verify your account first 🫡."
+            })
+
         user = authenticate(
             username=username,
             password=password
@@ -75,5 +87,4 @@ class LoginSerializer(serializers.Serializer):
             })
 
         attrs["user"] = user
-
         return attrs

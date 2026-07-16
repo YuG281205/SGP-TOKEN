@@ -47,9 +47,9 @@ class PromptHistory(models.Model):
     )
 
     ai_model = models.CharField(
-        max_length=20,
-        choices=AI_MODELS
-    )
+    max_length=100,
+    choices=AI_MODELS,
+)
 
     optimization_level = models.CharField(
         max_length=20,

@@ -1,11 +1,25 @@
-from ..benchmark.local_benchmark import LocalBenchmark
-from ..models import PromptHistory
+import os
 
+from dotenv import load_dotenv
+
+from ..benchmark.local_benchmark import LocalBenchmark
+from ..benchmark.LLMBenchmark import GeminiBenchmark
+from ..adapters.gemini_adapter import GeminiAdapter
+from ..prompt_builder.builder import PromptBuilder
+from ..models import PromptHistory
+from ..routers.gemini_routers import GeminiRouter
+
+load_dotenv()
 
 class OptimizerService:
 
     def __init__(self):
         self.local_benchmark = LocalBenchmark()
+        self.prompt_builder = PromptBuilder()
+
+        self.gemini_router = GeminiRouter()
+
+        self.gemini_benchmark = GeminiBenchmark()
 
     def optimize(
         self,
@@ -96,20 +110,111 @@ class OptimizerService:
             **result,
         }
 
-    # -------------------------------------------------------
-    # BALANCED PIPELINE
-    # -------------------------------------------------------
+# -------------------------------------------------------
+# BALANCED PIPELINE
+# -------------------------------------------------------
 
     def _balanced_pipeline(
-        self,
-        user,
-        prompt,
-        provider,
+    self,
+    user,
+    prompt,
+    provider,
     ):
 
+    # -----------------------------------------
+    # STEP 1 : Local Optimization
+    # -----------------------------------------
+
+        local_result = self.local_benchmark.compare(prompt)
+
+        cleaned_prompt = local_result["optimized_prompt"]
+
+        # -----------------------------------------
+        # STEP 2 : Build Prompt for Gemini
+        # -----------------------------------------
+
+        llm_prompt = self.prompt_builder.build_balanced_prompt(
+            cleaned_prompt
+        )
+
+        # -----------------------------------------
+        # STEP 3 : Gemini Optimization
+        # -----------------------------------------
+
+        llm_result = self.gemini_router.optimize(
+            llm_prompt
+        )
+
+        if not llm_result["success"]:
+            return {
+                "success": False,
+                "message": llm_result["error"],
+            }
+
+        final_prompt = llm_result["optimized_prompt"]
+
+        # -----------------------------------------
+        # STEP 4 : Benchmark
+        # -----------------------------------------
+
+        benchmark = self.gemini_benchmark.compare(
+            original_prompt=prompt,
+            optimized_prompt=final_prompt,
+        )
+
+        if not benchmark["success"]:
+            return {
+                "success": False,
+                "message": benchmark.get(
+                    "error",
+                    "Benchmark failed."
+                ),
+            }
+
+        # -----------------------------------------
+        # STEP 5 : Save History
+        # -----------------------------------------
+
+        history = PromptHistory.objects.create(
+
+            user=user,
+
+            original_prompt=benchmark["original_prompt"],
+
+            optimized_prompt=benchmark["optimized_prompt"],
+
+            ai_model=benchmark["ai_model"],
+
+            optimization_level="balanced",
+
+            original_input_tokens=benchmark["original_input_tokens"],
+
+            original_output_tokens=benchmark["original_output_tokens"],
+
+            optimized_input_tokens=benchmark["optimized_input_tokens"],
+
+            optimized_output_tokens=benchmark["optimized_output_tokens"],
+
+            original_total_tokens=benchmark["original_tokens"],
+
+            optimized_total_tokens=benchmark["optimized_tokens"],
+
+            tokens_saved=benchmark["tokens_saved"],
+
+            estimated_cost_saved=benchmark["estimated_cost_saved"],
+
+            processing_time=benchmark["processing_time"],
+
+            status=benchmark["status"],
+        )
+
         return {
-            "success": False,
-            "message": "Balanced pipeline is under development."
+
+            "success": True,
+
+            "history_id": history.id,
+
+            **benchmark,
         }
 
     # -------------------------------------------------------

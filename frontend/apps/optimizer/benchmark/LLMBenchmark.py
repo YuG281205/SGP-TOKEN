@@ -1,54 +1,64 @@
 import time
-from google import genai
+
+from ..routers.gemini_routers import GeminiRouter
 
 
 class GeminiBenchmark:
-    def __init__(self, api_key: str):
-        """
-        Initialize Gemini client.
-        """
-        self.client = genai.Client(api_key=api_key)
+
+    def __init__(self):
+        self.router = GeminiRouter()
 
     def benchmark(
         self,
         prompt: str,
-        model: str = "gemini-2.5-flash",
-        max_output_tokens: int = 1000,
+        max_output_tokens: int = 100,
     ) -> dict:
         """
-        Sends a prompt to Gemini and returns benchmark data.
+        Benchmark a prompt using Gemini Router.
+        The router automatically selects the available Gemini model.
         """
 
         start_time = time.perf_counter()
 
-        response = self.client.models.generate_content(
-            model=model,
-            contents=prompt,
-            config={
-                "max_output_tokens": max_output_tokens,
-            },
-        )
+        try:
 
-        latency = round(time.perf_counter() - start_time, 3)
+            result = self.router.optimize(prompt)
 
-        usage = response.usage_metadata
+            latency = round(time.perf_counter() - start_time, 3)
 
-        return {
-            "provider": "Gemini",
-            "model": model,
-            "response": response.text,
-            "input_tokens": usage.prompt_token_count,
-            "output_tokens": usage.candidates_token_count,
-            "total_tokens": usage.total_token_count,
-            "latency_seconds": latency,
-        }
+            return {
+                "success": True,
+                "provider": result["provider"],
+                "model": result["model"],
+                "response": result["optimized_prompt"],
+                "input_tokens": result["usage"]["input_tokens"],
+                "output_tokens": result["usage"]["output_tokens"],
+                "total_tokens": result["usage"]["total_tokens"],
+                "latency_seconds": latency,
+                "error": None,
+            }
+
+        except Exception as e:
+
+            latency = round(time.perf_counter() - start_time, 3)
+
+            return {
+                "success": False,
+                "provider": "Gemini",
+                "model": "",
+                "response": "",
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "total_tokens": 0,
+                "latency_seconds": latency,
+                "error": str(e),
+            }
 
     def compare(
         self,
         original_prompt: str,
         optimized_prompt: str,
-        model: str = "gemini-2.5-flash",
-        max_output_tokens: int = 1000,
+        max_output_tokens: int = 100,
     ) -> dict:
         """
         Compare original and optimized prompts.
@@ -56,15 +66,19 @@ class GeminiBenchmark:
 
         original = self.benchmark(
             prompt=original_prompt,
-            model=model,
             max_output_tokens=max_output_tokens,
         )
 
+        if not original["success"]:
+            return original
+
         optimized = self.benchmark(
             prompt=optimized_prompt,
-            model=model,
             max_output_tokens=max_output_tokens,
         )
+
+        if not optimized["success"]:
+            return optimized
 
         tokens_saved = (
             original["total_tokens"]
@@ -77,22 +91,20 @@ class GeminiBenchmark:
             3,
         )
 
-        # Replace this with real Gemini pricing if desired
         estimated_cost_saved = round(
             tokens_saved * 0.000001,
             6,
         )
 
         return {
+            "success": True,
+
+            "ai_model": optimized["model"],
 
             "original_prompt": original_prompt,
-
             "optimized_prompt": optimized_prompt,
 
-            "ai_model": model,
-
             "original_tokens": original["total_tokens"],
-
             "optimized_tokens": optimized["total_tokens"],
 
             "tokens_saved": tokens_saved,
@@ -103,12 +115,9 @@ class GeminiBenchmark:
 
             "status": "completed",
 
-            # Optional (useful for frontend even if not stored)
             "original_response": original["response"],
-
             "optimized_response": optimized["response"],
 
-            # Optional (for debugging)
             "original_input_tokens": original["input_tokens"],
             "original_output_tokens": original["output_tokens"],
 

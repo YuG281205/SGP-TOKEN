@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Token Optimizer | Dashboard</title>
 
-   
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/optimizer-animation.css' %}">
 </head>
 <body>
 
@@ -245,6 +249,116 @@
 
     </div>
 
+    <!-- ================= AI PROCESSING OVERLAY ================= -->
+    <!-- Hidden by default, toggled by optimizer-animation.js via the
+         "is-visible" class. Do not remove any of the ids below —
+         optimizer-animation.js binds directly to them. -->
+
+    <div id="aiOverlay" class="ai-overlay" role="dialog" aria-modal="true" aria-live="polite" aria-label="Optimizing your prompt">
+
+        <div class="ai-overlay__backdrop"></div>
+
+        <div class="ai-panel">
+
+            <div class="ai-panel__core">
+
+                <div class="ai-orb">
+                    <span class="ai-orb__ring"></span>
+                    <span class="ai-orb__ring ai-orb__ring--2"></span>
+                </div>
+
+                <div class="ai-panel__status">
+                    <p class="ai-status-text" id="aiStatusText">Receiving prompt...</p>
+                    <div class="ai-progress-track">
+                        <div class="ai-progress-fill" id="aiProgressFill"></div>
+                    </div>
+                    <span class="ai-progress-percent" id="aiProgressPercent">0%</span>
+                </div>
+
+            </div>
+
+            <div class="ai-stage-viewport" id="aiStageViewport">
+
+                <!-- Stage 1: Receiving Prompt -->
+                <div class="ai-stage is-active" data-stage="1">
+                    <div class="ai-prompt-preview" id="stage1PromptPreview"></div>
+                    <div class="ai-particles" id="stage1Particles"></div>
+                </div>
+
+                <!-- Stage 2: Analyzing Prompt -->
+                <div class="ai-stage" data-stage="2">
+                    <div class="ai-scan-box">
+                        <div class="ai-scan-beam"></div>
+                        <p class="ai-scan-text" id="stage2Text"></p>
+                    </div>
+                </div>
+
+                <!-- Stage 3: Local Optimization -->
+                <div class="ai-stage" data-stage="3">
+                    <div class="ai-token-compress">
+                        <div class="ai-token-line"></div>
+                        <div class="ai-token-counter">
+                            <span id="liveTokenCount">0</span>
+                            <label>tokens</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage 4: LLM Optimization -->
+                <div class="ai-stage" data-stage="4">
+                    <div class="ai-neural-core" id="neuralCore"></div>
+                </div>
+
+                <!-- Stage 5: Benchmark -->
+                <div class="ai-stage" data-stage="5">
+                    <div class="ai-benchmark-cards">
+                        <div class="ai-benchmark-card">
+                            <h4>Original tokens</h4>
+                            <span id="benchOriginal">0</span>
+                        </div>
+                        <div class="ai-benchmark-card ai-benchmark-card--accent">
+                            <h4>Optimized tokens</h4>
+                            <span id="benchOptimized">0</span>
+                        </div>
+                    </div>
+                    <div class="ai-benchmark-stats">
+                        <div>
+                            <label>Tokens saved</label>
+                            <span id="benchSaved">0</span>
+                        </div>
+                        <div>
+                            <label>Processing time</label>
+                            <span id="benchTime">0.00s</span>
+                        </div>
+                        <div>
+                            <label>Cost saved</label>
+                            <span id="benchCost">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage 6: Completed -->
+                <div class="ai-stage" data-stage="6">
+                    <div class="ai-complete-check">
+                        <svg viewBox="0 0 52 52">
+                            <circle cx="26" cy="26" r="24"></circle>
+                            <path d="M14 27l7 7 16-16"></path>
+                        </svg>
+                    </div>
+                    <p class="ai-complete-label">Optimization complete</p>
+                    <div class="ai-final-prompt-box">
+                        <p id="finalPromptTyped"></p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="{% static 'js/optimizer-animation.js' %}"></script>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+
 </body>
-     <script src="{% static 'C:\Users\yugjh\Desktop\SGP-TOKEN\frontend\static\js\dashboard.js' %}"></script>
 </html>

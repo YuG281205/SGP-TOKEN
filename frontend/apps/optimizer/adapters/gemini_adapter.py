@@ -4,9 +4,24 @@ import time
 from dotenv import load_dotenv
 from google import genai
 
-from optimizer.adapters.base_adapter import BaseLLMAdapter
+from .base_adapter import BaseLLMAdapter
 
 load_dotenv()
+
+
+class GeminiRateLimitError(Exception):
+    """Raised when Gemini quota is exhausted or service is temporarily unavailable."""
+    pass
+
+
+class GeminiModelNotFoundError(Exception):
+    """Raised when the requested Gemini model is unavailable."""
+    pass
+
+
+class GeminiAuthenticationError(Exception):
+    """Raised when API key is invalid or access is denied."""
+    pass
 
 
 class GeminiAdapter(BaseLLMAdapter):
@@ -19,21 +34,20 @@ class GeminiAdapter(BaseLLMAdapter):
     def __init__(self):
 
         self.api_key = os.getenv("GEMINI_API_KEY")
-        self.model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY not found.")
 
         self.client = genai.Client(api_key=self.api_key)
 
-    def optimize(self, prompt: str) -> dict:
+    def optimize(self, prompt: str, model: str) -> dict:
 
         start_time = time.perf_counter()
 
         try:
 
             response = self.client.models.generate_content(
-                model=self.model,
+                model=model,
                 contents=prompt,
             )
 
@@ -47,7 +61,7 @@ class GeminiAdapter(BaseLLMAdapter):
 
                 "provider": "Gemini",
 
-                "model": self.model,
+                "model": model,
 
                 "optimized_prompt": response.text.strip(),
 
@@ -69,26 +83,64 @@ class GeminiAdapter(BaseLLMAdapter):
 
             latency = round(time.perf_counter() - start_time, 3)
 
-            return {
+            error = str(e).lower()
 
-                "success": False,
+            print("\n" + "=" * 60)
+            print("GEMINI API ERROR")
+            print("=" * 60)
+            print(type(e))
+            print(str(e))
+            print("=" * 60 + "\n")
 
-                "provider": "Gemini",
+            # -----------------------------
+            # 404 - Model not available
+            # -----------------------------
+            if (
+                "404" in error
+                or "not_found" in error
+                or "no longer available" in error
+            ):
+                raise GeminiModelNotFoundError(
+                    f"{model} is not available."
+                ) from e
 
-                "model": self.model,
+            # -----------------------------
+            # 429 - Quota exhausted
+            # -----------------------------
+            if (
+                "429" in error
+                or "resource_exhausted" in error
+                or "quota" in error
+                or "rate limit" in error
+            ):
+                raise GeminiRateLimitError(
+                    f"{model} quota exhausted."
+                ) from e
 
-                "optimized_prompt": "",
+            # -----------------------------
+            # 503 - High demand
+            # -----------------------------
+            if (
+                "503" in error
+                or "unavailable" in error
+                or "high demand" in error
+            ):
+                raise GeminiRateLimitError(
+                    f"{model} temporarily unavailable."
+                ) from e
 
-                "usage": {
+            # -----------------------------
+            # Authentication / Permission
+            # -----------------------------
+            if (
+                "401" in error
+                or "403" in error
+                or "permission_denied" in error
+                or "unauthenticated" in error
+            ):
+                raise GeminiAuthenticationError(
+                    "Gemini authentication failed."
+                ) from e
 
-                    "input_tokens": 0,
-
-                    "output_tokens": 0,
-
-                    "total_tokens": 0,
-                },
-
-                "execution_time": latency,
-
-                "error": str(e),
-            }
+            # Unknown error
+            raise
