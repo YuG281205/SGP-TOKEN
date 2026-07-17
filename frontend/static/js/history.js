@@ -24,9 +24,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const result = await response.json();
 
-        console.log("History API Response");
-        console.log(result);
-
         if (!response.ok) {
             alert(result.message || "Unable to fetch history.");
             return;
@@ -40,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="11" style="text-align:center;">
+                    <td colspan="7" style="text-align:center;">
                         No Prompt History Found
                     </td>
                 </tr>
@@ -55,37 +52,31 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 <tr>
 
-                    <td>${index + 1}</td>
+                    <td data-label="#">${index + 1}</td>
 
-                    <td>
+                    <td data-label="Date">
                         ${new Date(item.created_at).toLocaleDateString()}
                     </td>
 
-                    <td>${item.ai_model}</td>
+                    <td data-label="Model">${item.ai_model}</td>
 
-                    <td>${item.optimization_level}</td>
+                    <td data-label="Tokens Saved">${formatNumber(item.tokens_saved)}</td>
 
-                    <td>${item.original_total_tokens}</td>
+                    <td data-label="Cost Saved">$${item.estimated_cost_saved}</td>
 
-                    <td>${item.optimized_total_tokens}</td>
+                    <td data-label="Status">
+                        <span class="status-pill status-${(item.status || "").toLowerCase()}">
+                            ${item.status}
+                        </span>
+                    </td>
 
-                    <td>${item.tokens_saved}</td>
-
-                    <td>$${item.estimated_cost_saved}</td>
-
-                    <td>${item.processing_time} sec</td>
-
-                    <td>${item.status}</td>
-
-                    <td>
-
+                    <td data-label="Details">
                         <button
                             class="view-btn"
                             data-id="${item.id}"
                         >
                             View
                         </button>
-
                     </td>
 
                 </tr>
@@ -106,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             <tr>
 
-                <td colspan="11" style="text-align:center;color:red;">
+                <td colspan="7" style="text-align:center;color:red;">
 
                     Unable to load history.
 
@@ -119,6 +110,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 });
+
+// =====================================================
+// HELPERS
+// =====================================================
+
+function formatNumber(value) {
+    const num = Number(value);
+    return Number.isFinite(num) ? num.toLocaleString() : value;
+}
 
 // =====================================================
 // VIEW BUTTON EVENTS
@@ -156,25 +156,25 @@ function addViewButtonEvents(historyData) {
             // ===========================
 
             document.getElementById("originalInputTokens").textContent =
-                item.original_input_tokens;
+                formatNumber(item.original_input_tokens);
 
             document.getElementById("originalOutputTokens").textContent =
-                item.original_output_tokens;
+                formatNumber(item.original_output_tokens);
 
             document.getElementById("originalTotalTokens").textContent =
-                item.original_total_tokens;
+                formatNumber(item.original_total_tokens);
 
             document.getElementById("optimizedInputTokens").textContent =
-                item.optimized_input_tokens;
+                formatNumber(item.optimized_input_tokens);
 
             document.getElementById("optimizedOutputTokens").textContent =
-                item.optimized_output_tokens;
+                formatNumber(item.optimized_output_tokens);
 
             document.getElementById("optimizedTotalTokens").textContent =
-                item.optimized_total_tokens;
+                formatNumber(item.optimized_total_tokens);
 
             document.getElementById("tokensSaved").textContent =
-                item.tokens_saved;
+                formatNumber(item.tokens_saved);
 
             document.getElementById("costSaved").textContent =
                 "$" + item.estimated_cost_saved;
@@ -192,8 +192,9 @@ function addViewButtonEvents(historyData) {
             document.getElementById("optimizationLevel").textContent =
                 item.optimization_level;
 
-            document.getElementById("status").textContent =
-                item.status;
+            const statusEl = document.getElementById("status");
+            statusEl.textContent = item.status;
+            statusEl.className = "chip-value status-text status-" + (item.status || "").toLowerCase();
 
             document.getElementById("createdAt").textContent =
                 new Date(item.created_at).toLocaleString();
@@ -202,7 +203,7 @@ function addViewButtonEvents(historyData) {
             // OPEN MODAL
             // ===========================
 
-            document.getElementById("historyModal").style.display = "block";
+            document.getElementById("historyModal").style.display = "flex";
 
         });
 

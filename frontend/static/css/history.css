@@ -20,6 +20,7 @@
 
     --radius-lg: 20px;
     --radius-md: 10px;
+    --radius-sm: 8px;
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'Inter', sans-serif;
@@ -44,7 +45,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
 }
 
@@ -76,6 +77,10 @@ body {
 
 /* ============================================================
    TABLE CARD
+   Only the columns someone scans at a glance live here now.
+   Everything else (input/output tokens, prompts, etc.) lives
+   in the modal, so the table never needs to grow past the
+   viewport width, and the Details button is always visible.
    ============================================================ */
 .table-container {
     background: var(--card);
@@ -94,7 +99,6 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 900px;
 }
 
 thead th {
@@ -134,7 +138,6 @@ tbody tr:last-child td {
     to   { opacity: 1; transform: translateX(0); }
 }
 
-/* stagger the first ~12 rows so it doesn't feel like a single dump */
 tbody tr:nth-child(1)  { animation-delay: 0.02s; }
 tbody tr:nth-child(2)  { animation-delay: 0.05s; }
 tbody tr:nth-child(3)  { animation-delay: 0.08s; }
@@ -148,14 +151,13 @@ tbody tr:nth-child(10) { animation-delay: 0.29s; }
 tbody tr:nth-child(n+11) { animation-delay: 0.32s; }
 
 /* token / cost columns read as data — give them the mono face */
-td:nth-child(5), td:nth-child(6), td:nth-child(7), td:nth-child(8) {
+td:nth-child(4), td:nth-child(5) {
     font-family: var(--font-mono);
     color: var(--muted);
 }
 
 /* ============================================================
    STATUS PILLS
-   (safe to leave unused if history.js doesn't add these classes)
    ============================================================ */
 .status-pill {
     display: inline-flex;
@@ -191,8 +193,13 @@ td:nth-child(5), td:nth-child(6), td:nth-child(7), td:nth-child(8) {
     background: rgba(251, 113, 133, 0.12);
 }
 
+/* modal's status chip reuses the same palette, plain text (no pill bg) */
+.status-text.status-pending, .status-text.status-processing { color: var(--teal); }
+.status-text.status-completed, .status-text.status-success { color: #4ade80; }
+.status-text.status-failed, .status-text.status-error { color: var(--red); }
+
 /* ============================================================
-   ACTION BUTTON (e.g. "View" in the Action column)
+   ACTION BUTTON
    ============================================================ */
 .table-container button,
 .table-container .btn-view {
@@ -216,6 +223,11 @@ td:nth-child(5), td:nth-child(6), td:nth-child(7), td:nth-child(8) {
 
 /* ============================================================
    MODAL
+   modal-content is a flex column: the header stays put, the
+   body scrolls as one short region only if content genuinely
+   overflows — stats are a compact grid and prompts sit side
+   by side with their own internal scroll, so in the common
+   case nothing needs to scroll at all.
    ============================================================ */
 .modal {
     display: none;
@@ -226,23 +238,36 @@ td:nth-child(5), td:nth-child(6), td:nth-child(7), td:nth-child(8) {
     align-items: center;
     justify-content: center;
     z-index: 100;
+    padding: 24px;
 }
 
 .modal-content {
     width: 100%;
-    max-width: 720px;
-    max-height: 86vh;
-    overflow-y: auto;
+    max-width: 800px;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
     background: var(--card);
     border: 1px solid var(--card-border);
     border-radius: var(--radius-lg);
-    padding: 32px;
+    padding: 28px 28px 8px;
     animation: modalIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    overflow-y: auto;
 }
 
 @keyframes modalIn {
     from { opacity: 0; transform: translateY(12px) scale(0.97); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 18px;
 }
 
 .modal-content h2 {
@@ -252,14 +277,13 @@ td:nth-child(5), td:nth-child(6), td:nth-child(7), td:nth-child(8) {
     margin: 0 0 4px;
 }
 
-.modal-content hr {
-    border: none;
-    border-top: 1px solid var(--card-border);
-    margin: 16px 0 20px;
+.modal-subtitle {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
 }
 
 .modal .close {
-    float: right;
     font-size: 22px;
     color: var(--dim);
     cursor: pointer;
@@ -271,11 +295,11 @@ td:nth-child(5), td:nth-child(6), td:nth-child(7), td:nth-child(8) {
     color: var(--text);
 }
 
-.section { margin-bottom: 22px; }
+.section { margin-bottom: 20px; }
 
 .section h3 {
     font-family: var(--font-display);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--muted);
     margin: 0 0 10px;
@@ -283,8 +307,95 @@ td:nth-child(5), td:nth-child(6), td:nth-child(7), td:nth-child(8) {
     letter-spacing: 0.04em;
 }
 
+/* ---- meta chip row ---- */
+.meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.chip {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: #0c1220;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    min-width: 88px;
+}
+
+.chip-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--dim);
+}
+
+.chip-value {
+    font-size: 13.5px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* ---- compact stat grid (replaces the old tall stats table) ---- */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.stat-card {
+    background: #0c1220;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: var(--dim);
+}
+
+.stat-value {
+    font-family: var(--font-mono);
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.stat-highlight {
+    border-color: rgba(124, 108, 246, 0.35);
+    background: rgba(124, 108, 246, 0.08);
+}
+
+.stat-highlight .stat-value {
+    color: var(--purple-1);
+}
+
+/* ---- side-by-side prompts, each internally scrollable ---- */
+.prompt-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.prompt-col label {
+    display: block;
+    font-size: 11.5px;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+}
+
 .modal-content textarea {
     width: 100%;
+    height: 160px;
     resize: vertical;
     background: #0c1220;
     border: 1px solid var(--card-border);
@@ -293,34 +404,12 @@ td:nth-child(5), td:nth-child(6), td:nth-child(7), td:nth-child(8) {
     font-family: var(--font-mono);
     font-size: 13px;
     line-height: 1.6;
-    padding: 14px;
+    padding: 12px;
 }
 
 .modal-content textarea:focus {
     outline: none;
     border-color: var(--purple-2);
-}
-
-.stats-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 6px;
-}
-
-.stats-table td {
-    padding: 10px 4px;
-    font-size: 13.5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.stats-table td:first-child {
-    color: var(--muted);
-}
-
-.stats-table td:last-child {
-    text-align: right;
-    font-family: var(--font-mono);
-    font-weight: 600;
 }
 
 /* ============================================================
@@ -334,7 +423,53 @@ td:nth-child(5), td:nth-child(6), td:nth-child(7), td:nth-child(8) {
     }
 }
 
+/* ============================================================
+   RESPONSIVE
+   Below 720px the table becomes a stack of cards — each row's
+   cells switch to labeled blocks instead of shrinking columns
+   or forcing horizontal scroll to reach the Details button.
+   ============================================================ */
 @media (max-width: 720px) {
     body { padding: 20px; }
-    .modal-content { padding: 22px; }
+
+    .modal-content { padding: 20px 20px 8px; }
+
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .prompt-grid { grid-template-columns: 1fr; }
+
+    .table-container { overflow-x: visible; }
+
+    table, thead, tbody, tr, td { display: block; width: 100%; }
+
+    thead { display: none; }
+
+    tbody tr {
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-md);
+        margin: 12px;
+        padding: 4px 0;
+    }
+
+    tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        white-space: normal;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    tbody td:last-child { border-bottom: none; }
+
+    tbody td::before {
+        content: attr(data-label);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--dim);
+        flex-shrink: 0;
+    }
+
+    tbody td:first-child::before { content: none; }
 }
