@@ -3,8 +3,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import OptimizePromptSerializer
+from .serializers import OptimizePromptSerializer,PromptHistorySerializer
 from .services.optimizer_service import OptimizerService
+from .services.history_service import PromptHistoryService
 
 
 class OptimizePromptAPIView(APIView):
@@ -44,4 +45,75 @@ class OptimizePromptAPIView(APIView):
         return Response(
             result,
             status=status.HTTP_400_BAD_REQUEST
+        )
+
+class PromptHistoryAPIView(APIView):
+    """
+    Retrieve prompt history for the authenticated user.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        # Fetch user's prompt history
+        history = PromptHistoryService.get_user_history(request.user)
+
+        # ==========================
+        # Terminal Output
+        # ==========================
+        print("\n" + "=" * 80)
+        print("                    USER PROMPT HISTORY")
+        print("=" * 80)
+
+        print(f"Username      : {request.user.username}")
+        print(f"Email         : {request.user.email}")
+        print(f"Total Records : {history.count()}")
+
+        if not history.exists():
+            print("\nNo prompt history found for this user.")
+        else:
+            for index, item in enumerate(history, start=1):
+
+                print("\n" + "-" * 80)
+                print(f"History #{index}")
+                print("-" * 80)
+
+                print(f"ID                    : {item.id}")
+                print(f"Model                 : {item.ai_model}")
+                print(f"Optimization Level    : {item.optimization_level}")
+                print(f"Status                : {item.status}")
+
+                print("\nToken Statistics")
+                print(f"Original Input Tokens : {item.original_input_tokens}")
+                print(f"Original Output Tokens: {item.original_output_tokens}")
+                print(f"Optimized Input Tokens: {item.optimized_input_tokens}")
+                print(f"Optimized Output Tokens: {item.optimized_output_tokens}")
+                print(f"Original Total Tokens : {item.original_total_tokens}")
+                print(f"Optimized Total Tokens: {item.optimized_total_tokens}")
+                print(f"Tokens Saved          : {item.tokens_saved}")
+
+                print("\nPerformance")
+                print(f"Estimated Cost Saved  : ${item.estimated_cost_saved}")
+                print(f"Processing Time       : {item.processing_time:.2f} sec")
+
+                print("\nPrompts")
+                print(f"Original Prompt:\n{item.original_prompt}\n")
+                print(f"Optimized Prompt:\n{item.optimized_prompt}\n")
+
+                print(f"Created At            : {item.created_at}")
+                print(f"Updated At            : {item.updated_at}")
+
+        print("=" * 80 + "\n")
+
+        # Serialize data
+        serializer = PromptHistorySerializer(history, many=True)
+
+        return Response(
+            {
+                "success": True,
+                "count": history.count(),
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
         )

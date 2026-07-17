@@ -54,13 +54,29 @@ class OptimizePromptSerializer(serializers.Serializer):
         return attrs
 
 
+from rest_framework import serializers
+from .models import PromptHistory
+
+
 class PromptHistorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PromptHistory
-        fields = "__all__"
-        read_only_fields = (
-            "user",
+        fields = [
+            "id",
+            "ai_model",
+            "optimization_level",
+            "original_total_tokens",
+            "optimized_total_tokens",
+            "tokens_saved",
+            "estimated_cost_saved",
+            "processing_time",
+            "status",
             "created_at",
-            "updated_at",
-        )
+            "original_prompt",
+            "optimized_prompt",
+            "original_input_tokens",
+            "original_output_tokens",
+            "optimized_input_tokens",
+            "optimized_output_tokens",
+        ]

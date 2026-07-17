@@ -53,96 +53,158 @@ class RegisterAPIView(APIView):
             subject = "Verify Your Email"
 
             text_content = f"""
-Hello {user.username},
+            Hi {user.username},
 
-Thank you for registering.
+            Thanks for creating your AI Token Optimizer account.
 
-Please verify your email by clicking the link below:
+            Verify your email to activate it:
+            {verification_link}
 
-{verification_link}
+            This link expires shortly, so please use it soon.
 
-If you did not create this account, please ignore this email.
-"""
+            If you didn't create this account, you can safely ignore this email.
 
-            html_content = f"""
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <style>
-                            body {{
-                                font-family: Arial, sans-serif;
-                                background-color: #f4f4f4;
-                                padding: 30px;
-                            }}
+            — AI Token Optimizer
+            """
 
-                            .container {{
-                                max-width: 600px;
-                                margin: auto;
-                                background: white;
-                                padding: 30px;
-                                border-radius: 8px;
-                                text-align: center;
-                            }}
+            html_content = f"""\
+            <!DOCTYPE html>
+            <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+            <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <title>Verify your email</title>
+            <!--[if mso]>
+            <style>
+                table {{ border-collapse: collapse; }}
+                .fallback-font {{ font-family: Arial, sans-serif; }}
+            </style>
+            <![endif]-->
+            </head>
+            <body style="margin:0; padding:0; background-color:#f2f4f8;">
 
-                            h2 {{
-                                color: #333;
-                            }}
+                <!-- preheader (hidden preview text) -->
+                <div style="display:none; max-height:0; overflow:hidden; opacity:0;">
+                    Confirm your email to finish setting up AI Token Optimizer.
+                </div>
 
-                            p {{
-                                color: #555;
-                                font-size: 16px;
-                                line-height: 1.6;
-                            }}
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f2f4f8;">
+                    <tr>
+                        <td align="center" style="padding:40px 16px;">
 
-                            .button {{
-                                display: inline-block;
-                                margin-top: 20px;
-                                padding: 14px 28px;
-                                background-color: #0d6efd;
-                                color: white !important;
-                                text-decoration: none;
-                                border-radius: 5px;
-                                font-size: 16px;
-                                font-weight: bold;
-                            }}
+                            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+                                style="max-width:600px; width:100%; background-color:#ffffff; border-radius:14px; overflow:hidden; box-shadow:0 4px 20px rgba(15,23,42,0.06);">
 
-                            .footer {{
-                                margin-top: 30px;
-                                font-size: 13px;
-                                color: gray;
-                            }}
-                        </style>
-                    </head>
+                                <!-- brand header band -->
+                                <tr>
+                                    <td style="background-color:#0f1420; padding:22px 32px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td style="font-family:Arial,Helvetica,sans-serif; font-size:16px; font-weight:bold; color:#ffffff;">
+                                                    AI Token&nbsp;<span style="color:#8b8cf6;">Optimizer</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
 
-                    <body>
+                                <!-- body -->
+                                <tr>
+                                    <td style="padding:40px 40px 32px;">
 
-                    <div class="container">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td style="font-family:Arial,Helvetica,sans-serif; font-size:21px; font-weight:bold; color:#0f172a; padding-bottom:14px;">
+                                                    Confirm your email address
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:24px; color:#475569; padding-bottom:8px;">
+                                                    Hi <strong style="color:#0f172a;">{user.username}</strong>,
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:24px; color:#475569; padding-bottom:28px;">
+                                                    Thanks for creating your account. Click the button below to verify
+                                                    your email and activate it.
+                                                </td>
+                                            </tr>
 
-                        <h2>Welcome to SGP</h2>
+                                            <!-- bulletproof button -->
+                                            <tr>
+                                                <td align="center" style="padding-bottom:28px;">
+                                                    <!--[if mso]>
+                                                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="{verification_link}"
+                                                        style="height:48px;v-text-anchor:middle;width:220px;" arcsize="12%"
+                                                        strokecolor="#6366f1" fillcolor="#6366f1">
+                                                    <w:anchorlock/>
+                                                    <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;">
+                                                        Verify Email
+                                                    </center>
+                                                    </v:roundrect>
+                                                    <![endif]-->
+                                                    <!--[if !mso]><!-->
+                                                    <a href="{verification_link}"
+                                                    style="display:inline-block; padding:14px 32px; background-color:#6366f1;
+                                                            background-image:linear-gradient(90deg,#7c6cf6,#6366f1);
+                                                            color:#ffffff !important; font-family:Arial,Helvetica,sans-serif;
+                                                            font-size:15px; font-weight:bold; text-decoration:none;
+                                                            border-radius:10px; mso-hide:all;">
+                                                        Verify Email
+                                                    </a>
+                                                    <!--<![endif]-->
+                                                </td>
+                                            </tr>
 
-                        <p>Hello <strong>{user.username}</strong>,</p>
+                                           
+                                        </table>
 
-                        <p>
-                            Thank you for creating your account.
-                        </p>
+                                    </td>
+                                </tr>
 
-                        <p>
-                            Please verify your email address by clicking the button below.
-                        </p>
+                                <!-- divider -->
+                                <tr>
+                                    <td style="padding:0 40px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td style="border-top:1px solid #e6e8ef; font-size:0; line-height:0;">&nbsp;</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
 
-                        <a href="{verification_link}" class="button">
-                            Verify Email
-                        </a>
+                                <!-- footer -->
+                                <tr>
+                                    <td style="padding:24px 40px 32px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td style="font-family:Arial,Helvetica,sans-serif; font-size:12.5px; line-height:19px; color:#94a3b8;">
+                                                    If you didn't create this account, you can safely ignore this email —
+                                                    no changes will be made.
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
 
-                        <p class="footer">
-                            If you didn't create this account, you can safely ignore this email.
-                        </p>
+                            </table>
 
-                    </div>
+                            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px; width:100%;">
+                                <tr>
+                                    <td align="center" style="font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#a3aab8; padding:20px 12px 0;">
+                                        &copy; {2026} AI Token Optimizer. All rights reserved.
+                                    </td>
+                                </tr>
+                            </table>
 
-                    </body>
-                    </html>
-                    """
+                        </td>
+                    </tr>
+                </table>
+
+            </body>
+            </html>
+            """
 
             email = EmailMultiAlternatives(
                 subject,

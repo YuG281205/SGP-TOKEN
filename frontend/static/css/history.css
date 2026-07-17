@@ -1,0 +1,340 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap');
+
+/* ============================================================
+   TOKENS — matches auth.css / dashboard palette
+   ============================================================ */
+:root {
+    --bg: #080b14;
+    --card: #121a2c;
+    --card-border: rgba(255, 255, 255, 0.08);
+    --row-hover: rgba(255, 255, 255, 0.035);
+    --text: #eef2f8;
+    --muted: #94a3b8;
+    --dim: #5b6b85;
+
+    --purple-1: #7c6cf6;
+    --purple-2: #6366f1;
+    --teal: #2dd4bf;
+    --amber: #fbbf24;
+    --red: #fb7185;
+
+    --radius-lg: 20px;
+    --radius-md: 10px;
+
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    background:
+        radial-gradient(600px 400px at 10% 0%, rgba(124, 108, 246, 0.14), transparent 60%),
+        radial-gradient(500px 400px at 90% 100%, rgba(45, 212, 191, 0.07), transparent 60%),
+        var(--bg);
+    font-family: var(--font-body);
+    color: var(--text);
+    padding: 32px 40px 60px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.header {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.header h1 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+}
+
+.header p {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0;
+}
+
+/* ============================================================
+   TABLE CARD
+   ============================================================ */
+.table-container {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.08s;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+
+thead th {
+    text-align: left;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--dim);
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--card-border);
+    white-space: nowrap;
+}
+
+tbody td {
+    padding: 16px 18px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    white-space: nowrap;
+}
+
+tbody tr {
+    transition: background 0.15s ease;
+    animation: rowIn 0.4s ease both;
+}
+
+tbody tr:hover {
+    background: var(--row-hover);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+@keyframes rowIn {
+    from { opacity: 0; transform: translateX(-6px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* stagger the first ~12 rows so it doesn't feel like a single dump */
+tbody tr:nth-child(1)  { animation-delay: 0.02s; }
+tbody tr:nth-child(2)  { animation-delay: 0.05s; }
+tbody tr:nth-child(3)  { animation-delay: 0.08s; }
+tbody tr:nth-child(4)  { animation-delay: 0.11s; }
+tbody tr:nth-child(5)  { animation-delay: 0.14s; }
+tbody tr:nth-child(6)  { animation-delay: 0.17s; }
+tbody tr:nth-child(7)  { animation-delay: 0.20s; }
+tbody tr:nth-child(8)  { animation-delay: 0.23s; }
+tbody tr:nth-child(9)  { animation-delay: 0.26s; }
+tbody tr:nth-child(10) { animation-delay: 0.29s; }
+tbody tr:nth-child(n+11) { animation-delay: 0.32s; }
+
+/* token / cost columns read as data — give them the mono face */
+td:nth-child(5), td:nth-child(6), td:nth-child(7), td:nth-child(8) {
+    font-family: var(--font-mono);
+    color: var(--muted);
+}
+
+/* ============================================================
+   STATUS PILLS
+   (safe to leave unused if history.js doesn't add these classes)
+   ============================================================ */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 999px;
+    text-transform: capitalize;
+}
+
+.status-pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.status-pending, .status-processing {
+    color: var(--teal);
+    background: rgba(45, 212, 191, 0.12);
+}
+
+.status-completed, .status-success {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.12);
+}
+
+.status-failed, .status-error {
+    color: var(--red);
+    background: rgba(251, 113, 133, 0.12);
+}
+
+/* ============================================================
+   ACTION BUTTON (e.g. "View" in the Action column)
+   ============================================================ */
+.table-container button,
+.table-container .btn-view {
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(90deg, var(--purple-1), var(--purple-2));
+    border: none;
+    padding: 7px 16px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.table-container button:hover,
+.table-container .btn-view:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 6, 12, 0.65);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 720px;
+    max-height: 86vh;
+    overflow-y: auto;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    animation: modalIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-content h2 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px;
+}
+
+.modal-content hr {
+    border: none;
+    border-top: 1px solid var(--card-border);
+    margin: 16px 0 20px;
+}
+
+.modal .close {
+    float: right;
+    font-size: 22px;
+    color: var(--dim);
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s ease;
+}
+
+.modal .close:hover {
+    color: var(--text);
+}
+
+.section { margin-bottom: 22px; }
+
+.section h3 {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.modal-content textarea {
+    width: 100%;
+    resize: vertical;
+    background: #0c1220;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 14px;
+}
+
+.modal-content textarea:focus {
+    outline: none;
+    border-color: var(--purple-2);
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6px;
+}
+
+.stats-table td {
+    padding: 10px 4px;
+    font-size: 13.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.stats-table td:first-child {
+    color: var(--muted);
+}
+
+.stats-table td:last-child {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-weight: 600;
+}
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    .header, .table-container, tbody tr, .modal-content {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+@media (max-width: 720px) {
+    body { padding: 20px; }
+    .modal-content { padding: 22px; }
+}

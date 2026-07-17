@@ -20,3 +20,6 @@ def email_verified(request):
 
 def varification_failed(request):
     return render(request,"accounts/verification_fail.html")
+
+def history_page(request):
+    return render(request, "accounts/history.html")

@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt History | AI Token Optimizer</title>
+
+    <link rel="stylesheet" href="{% static 'css/history.css' %}">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="header">
+        <h1>Prompt History</h1>
+        <p>View all your previously optimized prompts.</p>
+    </div>
+
+    <!-- ================= TABLE ================= -->
+
+    <div class="table-container">
+
+        <table id="historyTable">
+
+            <thead>
+
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>AI Model</th>
+                    <th>Level</th>
+                    <th>Original Tokens</th>
+                    <th>Optimized Tokens</th>
+                    <th>Tokens Saved</th>
+                    <th>Cost Saved</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="historyBody">
+
+                <!-- Filled dynamically by history.js -->
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+                    PROMPT DETAILS MODAL
+======================================================== -->
+
+<div id="historyModal" class="modal">
+
+    <div class="modal-content">
+
+        <span class="close">&times;</span>
+
+        <h2>Prompt Details</h2>
+
+        <hr>
+
+        <!-- ================= ORIGINAL PROMPT ================= -->
+
+        <div class="section">
+
+            <h3>Original Prompt</h3>
+
+            <textarea
+                id="originalPrompt"
+                rows="8"
+                readonly
+            ></textarea>
+
+        </div>
+
+        <!-- ================= OPTIMIZED PROMPT ================= -->
+
+        <div class="section">
+
+            <h3>Optimized Prompt</h3>
+
+            <textarea
+                id="optimizedPrompt"
+                rows="8"
+                readonly
+            ></textarea>
+
+        </div>
+
+        <!-- ================= TOKEN DETAILS ================= -->
+
+        <h3>Token Statistics</h3>
+
+        <table class="stats-table">
+
+            <tbody>
+
+                <tr>
+                    <td>Original Input Tokens</td>
+                    <td id="originalInputTokens">0</td>
+                </tr>
+
+                <tr>
+                    <td>Original Output Tokens</td>
+                    <td id="originalOutputTokens">0</td>
+                </tr>
+
+                <tr>
+                    <td>Original Total Tokens</td>
+                    <td id="originalTotalTokens">0</td>
+                </tr>
+
+                <tr>
+                    <td>Optimized Input Tokens</td>
+                    <td id="optimizedInputTokens">0</td>
+                </tr>
+
+                <tr>
+                    <td>Optimized Output Tokens</td>
+                    <td id="optimizedOutputTokens">0</td>
+                </tr>
+
+                <tr>
+                    <td>Optimized Total Tokens</td>
+                    <td id="optimizedTotalTokens">0</td>
+                </tr>
+
+                <tr>
+                    <td>Tokens Saved</td>
+                    <td id="tokensSaved">0</td>
+                </tr>
+
+                <tr>
+                    <td>Estimated Cost Saved</td>
+                    <td id="costSaved">0</td>
+                </tr>
+
+                <tr>
+                    <td>Processing Time</td>
+                    <td id="processingTime">0 sec</td>
+                </tr>
+
+                <tr>
+                    <td>AI Model</td>
+                    <td id="modelName">-</td>
+                </tr>
+
+                <tr>
+                    <td>Optimization Level</td>
+                    <td id="optimizationLevel">-</td>
+                </tr>
+
+                <tr>
+                    <td>Status</td>
+                    <td id="status">-</td>
+                </tr>
+
+                <tr>
+                    <td>Created At</td>
+                    <td id="createdAt">-</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script src="{% static 'js/history.js' %}"></script>
+
+</body>
+</html>
