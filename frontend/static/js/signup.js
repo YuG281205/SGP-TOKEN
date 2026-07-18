@@ -4,7 +4,7 @@ document.getElementById('signupform').addEventListener("submit",async function (
     const email =  document.getElementById('Email').value;
     const password = document.getElementById('Password').value;
     const cpassword = document.getElementById('CPassword').value;
-    
+
     const response = await fetch('/api/register/',{
         method :"POST",
         headers : {

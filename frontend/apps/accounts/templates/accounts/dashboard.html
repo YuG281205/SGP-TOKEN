@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/optimizer-animation.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth-shared.css' %}">
 </head>
 <body>
 
@@ -86,19 +87,28 @@
             <!-- AI Model -->
 
             <section class="model-section">
-
                 <label>Select AI Model</label>
 
-                <select id="model">
+                <div class="custom-select" id="modelCustomSelect">
+                    <button type="button" class="custom-select-trigger" id="modelTrigger" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="custom-select-value is-placeholder" id="modelTriggerLabel">Choose Model</span>
+                        <svg class="custom-select-arrow" viewBox="0 0 20 20" width="16" height="16" fill="none">
+                            <path d="M5.5 7.5l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <ul class="custom-select-list" id="modelList" role="listbox" tabindex="-1">
+                        <li class="custom-select-option is-selected" role="option" data-value="" aria-selected="true" tabindex="-1">Choose Model</li>
+                        <li class="custom-select-option" role="option" data-value="gemini" aria-selected="false" tabindex="-1">Gemini</li>
+                        <li class="custom-select-option" role="option" data-value="ollama" aria-selected="false" tabindex="-1">Ollama</li>
+                    </ul>
+                </div>
 
+                <!-- kept for dashboard.js compatibility — not visible on screen -->
+                <select id="model" class="visually-hidden-select" tabindex="-1" aria-hidden="true">
                     <option value="">Choose Model</option>
-
                     <option value="gemini">Gemini</option>
-
                     <option value="ollama">Ollama</option>
-
-                 </select>
-
+                </select>
             </section>
 
             <!-- Optimization Level -->
@@ -356,8 +366,10 @@
         </div>
 
     </div>
-
+    
+    <script src="{% static 'js/custom-select.js' %}"></script>
     <script src="{% static 'js/optimizer-animation.js' %}"></script>
+    <script src="{% static 'js/cursor.js' %}"></script>
     <script src="{% static 'js/dashboard.js' %}"></script>
 
 </body>
