@@ -162,3 +162,65 @@ class AnalyticsAPIView(APIView):
             "date_analytics":date_activity,
 
         })
+
+
+from .models import PromptHistory
+
+
+class PromptAnalysisAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        prompts = (
+            PromptHistory.objects
+            .filter(user=request.user)
+            .order_by("-created_at")
+        )
+
+        data = []
+
+        for prompt in prompts:
+
+            data.append({
+
+                "id": prompt.id,
+
+                "original_prompt": prompt.original_prompt,
+
+                "optimized_prompt": prompt.optimized_prompt,
+
+                "ai_model": prompt.ai_model,
+
+                "optimization_level": prompt.optimization_level,
+
+                "semantic_accuracy": float(prompt.semantic_accuracy),
+
+                "optimization_score": round(prompt.optimization_score, 2),
+
+                "quality_rating": prompt.quality_rating,
+
+                "original_tokens": prompt.original_total_tokens,
+
+                "optimized_tokens": prompt.optimized_total_tokens,
+
+                "tokens_saved": prompt.tokens_saved,
+
+                "estimated_cost_saved": float(prompt.estimated_cost_saved),
+
+                "processing_time": round(prompt.processing_time, 2),
+
+                "status": prompt.status,
+
+                "created_at": prompt.created_at.strftime(
+                    "%d %b %Y %I:%M %p"
+                )
+
+            })
+
+        return Response({
+            "count": len(data),
+            "prompts": data
+        })
+

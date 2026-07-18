@@ -10,4 +10,5 @@ urlpatterns = [
     path('verification_fail/',views.varification_failed,name='verification_failed'),
     path('history/',views.history_page,name='history_page'),
     path('analytics/',views.analytics_view,name='analytics'),
+    path('prompt-analysis/',views.prompt_analysis_view,name='prompt-analysis'),
 ]

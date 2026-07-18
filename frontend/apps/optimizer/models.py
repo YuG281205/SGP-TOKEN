@@ -82,7 +82,20 @@ class PromptHistory(models.Model):
     processing_time = models.FloatField(
         default=0
     )
+    semantic_accuracy = models.DecimalField(
+    max_digits=5,
+    decimal_places=2,
+    default=0.00
+    )
 
+    optimization_score = models.FloatField(
+        default=0
+    )
+
+    quality_rating = models.CharField(
+        max_length=20,
+        default="Good"
+    )
     created_at = models.DateTimeField(
         auto_now_add=True
     )

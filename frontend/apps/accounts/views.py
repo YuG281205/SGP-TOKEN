@@ -39,3 +39,6 @@ def analytics_view(request):
         request,
         "accounts/analytics.html",
     )
+
+def prompt_analysis_view(request):
+    return render(request,"accounts/prompt_analysis.html")
