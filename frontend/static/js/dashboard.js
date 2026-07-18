@@ -180,3 +180,4 @@ if (downloadBtn) {
         URL.revokeObjectURL(url);
     });
 }
+

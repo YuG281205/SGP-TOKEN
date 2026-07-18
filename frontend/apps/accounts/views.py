@@ -1,5 +1,10 @@
 from django.shortcuts import render
+from ..optimizer.analytics.overview import get_overview_statistics
+from django.contrib.auth.decorators import login_required
 
+from apps.optimizer.analytics.overview import (
+    get_overview_statistics,
+)
 
 def signup(request):
     return render(request, "accounts/signup.html")
@@ -21,5 +26,16 @@ def email_verified(request):
 def varification_failed(request):
     return render(request,"accounts/verification_fail.html")
 
+
 def history_page(request):
     return render(request, "accounts/history.html")
+
+
+def analytics_view(request):
+    """
+    Analytics Dashboard
+    """
+    return render(
+        request,
+        "accounts/analytics.html",
+    )

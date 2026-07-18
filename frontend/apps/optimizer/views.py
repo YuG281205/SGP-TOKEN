@@ -8,6 +8,13 @@ from .services.optimizer_service import OptimizerService
 from .services.history_service import PromptHistoryService
 
 
+from .analytics.overview import get_overview_statistics
+from .analytics.performance import get_performance_statistics
+from .analytics.insights import get_insights_statistics
+from .analytics.activity import get_recent_activity,get_date_analytics
+from .analytics.status import get_status_statistics
+
+
 class OptimizePromptAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -117,3 +124,41 @@ class PromptHistoryAPIView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+# apps/api/views.py
+
+
+
+class AnalyticsAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        overview = get_overview_statistics(request.user)
+
+        performance = get_performance_statistics(request.user)
+
+        insights = get_insights_statistics(request.user)
+
+        activity = get_recent_activity(request.user)
+
+        status = get_status_statistics(request.user)
+
+        date_activity = get_date_analytics(request.user)
+
+        return Response({
+
+            "overview": overview,
+
+            "performance": performance,
+
+            "insights": insights,
+
+            "activity": activity,
+
+            "status": status,
+
+            "date_analytics":date_activity,
+
+        })

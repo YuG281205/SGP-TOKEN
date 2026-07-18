@@ -8,5 +8,6 @@ urlpatterns = [
     path('check_email/',views.check_email,name='check_email'),
     path('email_verified/',views.email_verified,name='email_verified'),
     path('verification_fail/',views.varification_failed,name='verification_failed'),
-    path('history/',views.history_page,name='history_page')
+    path('history/',views.history_page,name='history_page'),
+    path('analytics/',views.analytics_view,name='analytics'),
 ]
