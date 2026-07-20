@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     loadAnalytics();
+    initializeLogout();
 });
 
 // =====================================================
@@ -18,6 +19,8 @@ async function loadAnalytics() {
         const data = await response.json();
 
         console.log("Analytics Response:", data);
+
+        setText("username", data.username);
 
         loadOverview(data.overview);
         loadInsights(data.insights);
@@ -228,4 +231,27 @@ function loadDateAnalytics(data) {
             }
         }
     });
+}
+// =====================================================
+// LOGOUT
+// =====================================================
+function initializeLogout() {
+
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    if (!logoutBtn) return;
+
+    logoutBtn.addEventListener("click", logout);
+}
+
+function logout() {
+
+    // Remove stored authentication
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+
+    // Redirect to login page
+    window.location.href = "/login/";
 }

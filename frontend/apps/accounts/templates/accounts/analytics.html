@@ -11,8 +11,8 @@
 
     <title>AI Token Optimizer | Analytics</title>
 
-    <!--<link rel="stylesheet"
-          href="{% static 'css/analytics.css' %}"> -->
+    <link rel="stylesheet"
+          href="{% static 'css/analytics.css' %}">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
           rel="stylesheet">
@@ -35,9 +35,13 @@
 
         <div class="navbar-right">
 
-            <span id="username">
-                Welcome
+            <span>
+                Welcome, <strong id="username">User</strong>
             </span>
+
+            <button id="logoutBtn">
+                Logout
+            </button>
 
         </div>
 
@@ -99,12 +103,11 @@
 
                 <li>
 
-                    <a href="#"
-                       id="logoutBtn">
+                    <a href="#">
 
-                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <i class="fa-solid fa-gear"></i>
 
-                        Logout
+                        Settings
 
                     </a>
 
@@ -642,6 +645,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="{% static 'js/cursor.js' %}"></script>
 
     <script src="{% static 'js/analytics.js' %}"></script>
 

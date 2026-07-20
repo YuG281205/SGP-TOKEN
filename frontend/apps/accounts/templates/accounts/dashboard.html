@@ -9,9 +9,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          rel="stylesheet">
+
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/optimizer-animation.css' %}">
     <link rel="stylesheet" href="{% static 'css/auth-shared.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 </head>
 <body>
 
@@ -38,16 +42,40 @@
 
             <ul>
 
-                <li><a href="#">🏠 Dashboard</a></li>
+                <li class="active">
+                    <a href="#">
+                        <i class="fa-solid fa-house"></i>
+                        Dashboard
+                    </a>
+                </li>
 
-                <li><a href="{% url 'history_page' %}">📜 History</a></li>
+                <li>
+                    <a href="{% url 'history_page' %}">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        History
+                    </a>
+                </li>
 
-                <li><a href="{%url 'prompt-analysis'%}">⭐ Prompt Analysis</a></li>
+                <li>
+                    <a href="{%url 'prompt-analysis'%}">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                        Prompt Analysis
+                    </a>
+                </li>
 
+                <li>
+                    <a href="{%url 'analytics'%}">
+                        <i class="fa-solid fa-chart-line"></i>
+                        Analytics
+                    </a>
+                </li>
 
-                <li><a href="{%url 'analytics'%}">📊 Analytics</a></li>
-
-                <li><a href="#">⚙ Settings</a></li>
+                <li>
+                    <a href="#">
+                        <i class="fa-solid fa-gear"></i>
+                        Settings
+                    </a>
+                </li>
 
             </ul>
 

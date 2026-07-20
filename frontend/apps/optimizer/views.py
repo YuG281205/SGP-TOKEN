@@ -149,6 +149,8 @@ class AnalyticsAPIView(APIView):
 
         return Response({
 
+            "username": request.user.username,
+
             "overview": overview,
 
             "performance": performance,
@@ -221,6 +223,6 @@ class PromptAnalysisAPIView(APIView):
 
         return Response({
             "count": len(data),
-            "prompts": data
+            "prompts": data     
         })
 

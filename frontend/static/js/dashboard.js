@@ -181,3 +181,25 @@ if (downloadBtn) {
     });
 }
 
+// =====================================================
+// LOGOUT
+// =====================================================
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", logout);
+    console.log("Logout button:",logoutBtn);
+}
+
+function logout() {
+    console.log("Logout clicked");
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+
+    window.location.href = "/login/";
+}
+
+
