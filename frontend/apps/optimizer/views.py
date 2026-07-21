@@ -119,6 +119,7 @@ class PromptHistoryAPIView(APIView):
         return Response(
             {
                 "success": True,
+                "username":request.user.username,
                 "count": history.count(),
                 "data": serializer.data
             },
@@ -222,6 +223,7 @@ class PromptAnalysisAPIView(APIView):
             })
 
         return Response({
+            "username":request.user.username,
             "count": len(data),
             "prompts": data     
         })

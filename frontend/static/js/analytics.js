@@ -97,6 +97,13 @@ function loadPerformance(data) {
     createTokenChart(data.token_usage);
     createModelChart(data.model_usage);
     createLevelChart(data.optimization_levels);
+
+    // Chart.js can measure its container mid-layout on first paint,
+    // especially inside grids. A resize on the next frame forces it
+    // to re-measure against the final, settled container width.
+    requestAnimationFrame(() => {
+        Object.values(Chart.instances).forEach(instance => instance.resize());
+    });
 }
 
 // =====================================================
@@ -118,7 +125,8 @@ function createTokenChart(data) {
             ]
         },
         options: {
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: false
         }
     });
 }
@@ -142,7 +150,8 @@ function createModelChart(data) {
             ]
         },
         options: {
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: false
         }
     });
 }
@@ -167,6 +176,7 @@ function createLevelChart(data) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales: {
                 y: {
                     beginAtZero: true
@@ -209,6 +219,7 @@ function loadDateAnalytics(data) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: true
@@ -232,6 +243,7 @@ function loadDateAnalytics(data) {
         }
     });
 }
+
 // =====================================================
 // LOGOUT
 // =====================================================
@@ -255,3 +267,4 @@ function logout() {
     // Redirect to login page
     window.location.href = "/login/";
 }
+

@@ -235,13 +235,13 @@ class OptimizerService:
         # STEP 1 : Local Optimization
         # -----------------------------------------
 
-        local_result = self.local_benchmark.compare(
+        # local_result = self.local_benchmark.compare(
 
-            prompt
+        #     prompt
 
-        )
+        # )
 
-        cleaned_prompt = local_result["optimized_prompt"]
+        # cleaned_prompt = local_result["optimized_prompt"]
 
         # -----------------------------------------
         # STEP 2 : Build Prompt for Gemini
@@ -249,7 +249,7 @@ class OptimizerService:
 
         llm_prompt = self.prompt_builder.build_balanced_prompt(
 
-            cleaned_prompt
+            prompt
 
         )
 

@@ -17,5 +17,5 @@ class PromptBuilder:
 
     def build_balanced_prompt(self, cleaned_prompt: str) -> str:
         template = self._load_template("balanced_prompt.txt")
-
+        print(template)
         return template.replace("{PROMPT}", cleaned_prompt)

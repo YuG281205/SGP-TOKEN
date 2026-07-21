@@ -353,8 +353,8 @@
     options = options || {};
     const data = resultData || {};
 
-    const originalTokens = Number(data.original_total_tokens) || 0;
-    const optimizedTokens = Number(data.optimized_total_tokens) || 0;
+    const originalTokens = Number(data.original_total_tokens ?? data.original_tokens) || 0;
+    const optimizedTokens = Number(data.optimized_total_tokens ?? data.optimized_tokens) || 0;
     const tokensSaved = data.tokens_saved != null ? Number(data.tokens_saved) : Math.max(0, originalTokens - optimizedTokens);
     const processingTime = data.processing_time != null ? Number(data.processing_time) : 0;
     const costSaved = data.estimated_cost_saved != null ? data.estimated_cost_saved : "0.000000";

@@ -1,11 +1,18 @@
 document.addEventListener("DOMContentLoaded", async function () {
 
     const token = localStorage.getItem("access");
-
+    
     if (!token) {
         alert("Please login first.");
         window.location.href = "/login/";
         return;
+    }
+
+    // Populate the shared navbar's username, same as dashboard.js
+    const username = localStorage.getItem("username");
+    const usernameEl = document.getElementById("username");
+    if (usernameEl && username) {
+        usernameEl.innerText = username;
     }
 
     const tableBody = document.getElementById("historyBody");
@@ -254,3 +261,24 @@ document.addEventListener("keydown", function (event) {
     }
 
 });
+
+
+// =====================================================
+// LOGOUT
+// =====================================================
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", logout);
+}
+
+function logout() {
+
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+
+    window.location.href = "/login/";
+}
