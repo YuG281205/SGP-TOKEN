@@ -3,7 +3,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 # Browser profile
-PROFILE_PATH = PROJECT_ROOT / "apps" / "comparison1" / "playwright" / "playwright_profile"
+PROFILE_PATH_1 = PROJECT_ROOT / "apps" / "comparison1" / "playwright" / "playwright_profile1"
+PROFILE_PATH_2 = PROJECT_ROOT / "apps" / "comparison1" / "playwright" / "playwright_profile2"
+PROFILE_PATH_3 = PROJECT_ROOT / "apps" / "comparison1" / "playwright" / "playwright_profile3"
+
 
 # Playwright outputs
 OUTPUT_DIR = PROJECT_ROOT / "apps" / "comparison1" / "playwright" / "playwright_output_aiven"
@@ -25,9 +28,15 @@ TIMEOUT = 30000
 # Website to automate
 AIVEN_URL = "https://aiven.io/tools/prompt-optimizer"
 
+PROMPTNATUS_URL = "https://www.promptnatus.com/"
+
+NUMSTACK_URL = "https://numstack.net/calculators/prompt-optimizer"
+
 # Create directories if they don't exist
 for folder in [
-    PROFILE_PATH,
+    PROFILE_PATH_1,
+    PROFILE_PATH_2,
+    PROFILE_PATH_3,
     OUTPUT_DIR,
     TRACE_DIR,
     HAR_DIR,

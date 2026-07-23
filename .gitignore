@@ -24,7 +24,7 @@ staticfiles/
 media/
 
 # Playwright
-playwright_profile/
+playwright_profile*/
 playwright_output_*/
 *.har
 *.zip

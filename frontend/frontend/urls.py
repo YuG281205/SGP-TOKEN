@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path("api/", include("apps.api.urls")),
     path("api/", include("apps.optimizer.urls")),
+    path("api/",include("apps.comparison1.urls"),)
 ]
 
 if settings.DEBUG:

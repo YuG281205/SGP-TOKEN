@@ -5,9 +5,10 @@ from apps.optimizer.models import PromptHistory
 class ComparisonHistory(models.Model):
 
     OPTIMIZER_CHOICES = (
-        ("aiven", "Aiven Prompt Optimizer"),
-        ("promptoptimizer", "PromptOptimizer.tools"),
-    )
+    ("aiven", "Aiven Prompt Optimizer"),
+    ("promptnatus", "PromptNatus"),
+    ("numstack", "NumStack Prompt Optimizer"),
+)
 
     STATUS_CHOICES = (
         ("pending", "Pending"),

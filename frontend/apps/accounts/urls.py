@@ -11,4 +11,5 @@ urlpatterns = [
     path('history/',views.history_page,name='history_page'),
     path('analytics/',views.analytics_view,name='analytics'),
     path('prompt-analysis/',views.prompt_analysis_view,name='prompt-analysis'),
+    path('comparison/',views.comparison_view,name='comparison'),
 ]

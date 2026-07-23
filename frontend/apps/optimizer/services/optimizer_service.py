@@ -8,6 +8,9 @@ from ..prompt_builder.builder import PromptBuilder
 from ..models import PromptHistory
 from ..routers.gemini_routers import GeminiRouter
 from .evaluation_services import EvaluationService
+from threading import Thread
+
+from apps.comparison1.services.comparison_service import ComparisonService,PromptnatusComparisonService,NumstackComparisonService
 
 load_dotenv()
 
@@ -386,7 +389,24 @@ class OptimizerService:
             quality_rating=quality_rating,
 
         )
+        Thread(
+        target=ComparisonService.compare,
+        args=(history.id,),
+        daemon=True,
+        ).start()
 
+        Thread(
+                target=PromptnatusComparisonService.compare,
+                args=(history.id,),
+                daemon=True,
+                ).start()
+
+        Thread(
+            target=NumstackComparisonService.compare,
+            args=(history.id,),
+            daemon=True,
+        ).start()
+        
         return {
 
             "success": True,
@@ -402,6 +422,7 @@ class OptimizerService:
             "quality_rating": quality_rating,
 
         }
+    
 
     # ==========================================================
     # AGGRESSIVE PIPELINE

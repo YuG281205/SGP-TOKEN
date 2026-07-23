@@ -13,11 +13,10 @@ from apps.comparison1.playwright.manager import BrowserManager
 class AivenService:
 
     @staticmethod
-    @staticmethod
     def optimize(
-    prompt: str,
-    screenshot_name: str = "after_optimize.png",
-        ) -> str:
+        prompt: str,
+        screenshot_name: str = "after_optimize.png",
+    ) -> str:
 
         manager = BrowserManager()
         context = manager.start()
@@ -78,12 +77,48 @@ class AivenService:
 
     @staticmethod
     def _type_into_monaco(page, prompt):
+        """
+        Sets the prompt directly on the Monaco editor's model instead of
+        simulating keystrokes. Playwright's keyboard.type() dispatches one
+        event per character, and Monaco often re-runs syntax highlighting
+        and layout on every keystroke — for long prompts this can take
+        several seconds. Writing straight to the model via setValue() is
+        effectively an instant "paste" and skips that overhead entirely.
+
+        setValue() still fires Monaco's onDidChangeModelContent event, so
+        most React/Vue bindings that listen for content changes (e.g. to
+        enable the Optimize button) will still pick it up correctly.
+        """
         page.wait_for_selector(".monaco-editor", state="visible", timeout=TIMEOUT)
         editor = page.locator(".monaco-editor").first
         editor.click()
-        page.keyboard.press("Control+A")
-        page.keyboard.press("Delete")
-        page.keyboard.type(prompt, delay=10)
+
+        set_directly = page.evaluate(
+            """(text) => {
+                if (!window.monaco || !window.monaco.editor) return false;
+                const models = window.monaco.editor.getModels();
+                if (!models || models.length === 0) return false;
+
+                // Prefer the model that looks like the empty input editor
+                // (safer than hardcoding index 0 if ordering isn't guaranteed).
+                let model = models.find(
+                    (m) => !m.getValue() || m.getValue().trim().length === 0
+                );
+                if (!model) model = models[0];
+
+                model.setValue(text);
+                return true;
+            }""",
+            prompt,
+        )
+
+        if not set_directly:
+            # Fallback: Monaco global API not exposed on this page —
+            # use insert_text, which pastes the whole string as one
+            # operation instead of dispatching per-character key events.
+            page.keyboard.press("Control+A")
+            page.keyboard.press("Delete")
+            page.keyboard.insert_text(prompt)
 
     @staticmethod
     def _wait_for_button_idle(page, button, timeout_ms=30000):
