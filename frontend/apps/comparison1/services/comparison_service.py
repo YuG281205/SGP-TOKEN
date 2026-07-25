@@ -4,8 +4,8 @@ from apps.optimizer.models import PromptHistory
 from apps.optimizer.benchmark.LLMBenchmark import GeminiBenchmark
 from apps.comparison1.models import ComparisonHistory
 from apps.comparison1.services.aiven_service import AivenService
-from apps.comparison1.services.promptnatus_service import PromptnatusService
 from apps.comparison1.services.numstack_service import NumstackService
+from apps.comparison1.services.prompt_generator_service import PromptGeneratorService
 from apps.optimizer.utils.semantic_similarity import (
     calculate_semantic_accuracy,
 )
@@ -104,7 +104,7 @@ class ComparisonService:
         return comparison
 
 
-class PromptnatusComparisonService:
+class PromptGeneratorComparisonService:
 
     @staticmethod
     def token_reduction_score(original_tokens, saved_tokens):
@@ -127,8 +127,8 @@ class PromptnatusComparisonService:
         # Generate unique screenshot filename
         filename = f"{uuid4().hex}.png"
 
-        # Optimize using PromptNatus
-        promptnatus_optimized_prompt = PromptnatusService.optimize(
+        # Optimize using the free Prompt Generator
+        prompt_generator_optimized_prompt = PromptGeneratorService.optimize(
             history.original_prompt,
             screenshot_name=filename,
         )
@@ -138,15 +138,15 @@ class PromptnatusComparisonService:
 
         benchmark_result = benchmark.compare(
             original_prompt=history.original_prompt,
-            optimized_prompt=promptnatus_optimized_prompt,
+            optimized_prompt=prompt_generator_optimized_prompt,
         )
 
         if not benchmark_result["success"]:
 
             comparison = ComparisonHistory.objects.create(
                 history=history,
-                optimizer_name="promptnatus",
-                optimized_prompt=promptnatus_optimized_prompt,
+                optimizer_name="prompt-opt",
+                optimized_prompt=prompt_generator_optimized_prompt,
                 optimized_prompt_image=f"comparison_images/{filename}",
                 status="failed",
                 error_message=benchmark_result["error"],
@@ -157,19 +157,19 @@ class PromptnatusComparisonService:
         # Semantic accuracy
         semantic_accuracy = calculate_semantic_accuracy(
             history.original_prompt,
-            promptnatus_optimized_prompt,
+            prompt_generator_optimized_prompt,
         )
 
         # Token reduction score
-        optimization_score = PromptnatusComparisonService.token_reduction_score(
+        optimization_score = PromptGeneratorComparisonService.token_reduction_score(
             benchmark_result["original_tokens"],
             benchmark_result["tokens_saved"],
         )
 
         comparison = ComparisonHistory.objects.create(
             history=history,
-            optimizer_name="promptnatus",
-            optimized_prompt=promptnatus_optimized_prompt,
+            optimizer_name="prompt_generator",
+            optimized_prompt=prompt_generator_optimized_prompt,
             optimized_input_tokens=benchmark_result[
                 "optimized_input_tokens"
             ],
@@ -229,7 +229,8 @@ class NumstackComparisonService:
         # variants since they all come from one page load/screenshot)
         filename = f"{uuid4().hex}.png"
 
-        # Optimize using Numstack - returns a dict of 3 variants
+        # Optimize using Numstack - returns a dict of 3 variants,
+        # e.g. {"Remove Redundancy": "...", "Restructure for Clarity": "...", ...}
         numstack_variants = NumstackService.optimize(
             history.original_prompt,
             screenshot_name=filename,
@@ -238,9 +239,11 @@ class NumstackComparisonService:
         benchmark = GeminiBenchmark()
         comparisons = []
 
-        for optimized_prompt in numstack_variants.items():
+        for strategy_name, optimized_prompt in numstack_variants.items():
 
-            optimizer_name = "numstack"
+            optimizer_name = NumstackComparisonService._optimizer_name_for(
+                strategy_name
+            )
 
             comparisons.append(
                 NumstackComparisonService._compare_single_variant(

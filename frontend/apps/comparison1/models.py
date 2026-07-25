@@ -6,7 +6,7 @@ class ComparisonHistory(models.Model):
 
     OPTIMIZER_CHOICES = (
     ("aiven", "Aiven Prompt Optimizer"),
-    ("promptnatus", "PromptNatus"),
+    ("prompt-opt", "PromptOpt"),
     ("numstack", "NumStack Prompt Optimizer"),
 )
 

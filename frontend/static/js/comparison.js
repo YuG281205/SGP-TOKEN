@@ -198,10 +198,12 @@ function getLogoMeta(optimizerName) {
         };
     }
 
-    if (name.includes("promptnatus")) {
+    // "prompt_generator" is the free Prompt Generator optimizer
+    // (replaces the old Promptnatus integration).
+    if (name.includes("prompt_generator")) {
         return {
-            cls: "logo-promptnatus",
-            html: `<img src="/static/img/logos/promptnatus-logo.png" alt="Promptnatus" class="optimizer-logo-img">`
+            cls: "logo-prompt-generator",
+            html: `<img src="/static/img/logos/prompt-generator-logo.webp" alt="Prompt Generator" class="optimizer-logo-img">`
         };
     }
 

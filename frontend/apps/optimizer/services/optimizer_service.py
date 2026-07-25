@@ -10,7 +10,7 @@ from ..routers.gemini_routers import GeminiRouter
 from .evaluation_services import EvaluationService
 from threading import Thread
 
-from apps.comparison1.services.comparison_service import ComparisonService,PromptnatusComparisonService,NumstackComparisonService
+from apps.comparison1.services.comparison_service import ComparisonService,PromptGeneratorComparisonService,NumstackComparisonService
 
 load_dotenv()
 
@@ -396,7 +396,7 @@ class OptimizerService:
         ).start()
 
         Thread(
-                target=PromptnatusComparisonService.compare,
+                target=PromptGeneratorComparisonService.compare,
                 args=(history.id,),
                 daemon=True,
                 ).start()

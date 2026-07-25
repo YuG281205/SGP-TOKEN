@@ -192,10 +192,16 @@
     object-fit: contain;
 }
 
-/* Promptnatus ships a full circular mark, so let it fill the badge. */
-.optimizer-logo.logo-promptnatus {
-    background: var(--panel);
-    border-color: var(--panel-border);
+/* Prompt Generator ships a full square mark on a dark rounded
+   background (gradient teal-to-violet "P"), so it fills the
+   badge like Numstack rather than getting Aiven's padded chip. */
+.optimizer-logo.logo-prompt-generator {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.optimizer-logo.logo-prompt-generator .optimizer-logo-img {
+    object-fit: cover;
 }
 
 .optimizer-logo.logo-numstack {

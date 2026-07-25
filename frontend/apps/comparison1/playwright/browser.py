@@ -28,7 +28,7 @@ TIMEOUT = 30000
 # Website to automate
 AIVEN_URL = "https://aiven.io/tools/prompt-optimizer"
 
-PROMPTNATUS_URL = "https://www.promptnatus.com/"
+FREE_PROMPT_GENERATOR = "https://promptopt.app/optimizer/en"
 
 NUMSTACK_URL = "https://numstack.net/calculators/prompt-optimizer"
 
