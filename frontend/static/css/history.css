@@ -151,7 +151,7 @@ td:nth-child(4), td:nth-child(5) {
 }
 
 .status-completed, .status-success {
-  color: var(--success);
+  color: #2ed8a0;
   background: var(--success-dim);
 }
 

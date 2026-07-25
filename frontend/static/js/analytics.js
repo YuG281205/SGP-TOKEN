@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     setupChartTheme();
+    registerGlassPlugins();
     loadAnalytics();
     initializeLogout();
 });
@@ -25,6 +26,7 @@ function setupChartTheme() {
         coral: read("--coral", "#ff6b6b"),
         gold: read("--accent-gold", "#f0c26b"),
         seafoam: read("--accent-seafoam", "#57d9c9"),
+        void: read("--void", "#0a0c10"),
         gridLine: "rgba(255, 255, 255, 0.07)",
         panelBorder: read("--panel-border", "rgba(255, 255, 255, 0.14)"),
         fontBody: "Inter, sans-serif",
@@ -67,6 +69,131 @@ function hexToRgba(hex, alpha) {
     const g = (bigint >> 8) & 255;
     const b = bigint & 255;
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+// =====================================================
+// GLASS PLUGINS
+// A small set of Chart.js plugins that make the canvases read as
+// part of the frosted-glass panes defined in analytics.css, rather
+// than flat shapes floating on top of them.
+// =====================================================
+function registerGlassPlugins() {
+    // Soft radial glow centered in the chart area — used behind ring
+    // charts (doughnut/pie) so the ring looks lit from within the glass
+    // instead of sitting on a flat dark background.
+    const glassRingGlow = {
+        id: "glassRingGlow",
+        beforeDraw(chart) {
+            if (chart.config.type !== "doughnut" && chart.config.type !== "pie") return;
+
+            const { ctx, chartArea } = chart;
+            if (!chartArea) return;
+
+            const { left, top, width, height } = chartArea;
+            const cx = left + width / 2;
+            const cy = top + height / 2;
+            const radius = Math.min(width, height) / 2;
+
+            ctx.save();
+            const glow = ctx.createRadialGradient(cx, cy, radius * 0.25, cx, cy, radius * 1.05);
+            glow.addColorStop(0, "rgba(255, 255, 255, 0.06)");
+            glow.addColorStop(0.7, "rgba(255, 255, 255, 0.02)");
+            glow.addColorStop(1, "rgba(255, 255, 255, 0)");
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 1.05, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        },
+    };
+
+    // Draws each slice's name + percentage just outside the ring, with
+    // a short leader line running from the ring edge to the label —
+    // the classic "labeled donut" look, on top of (not instead of) the
+    // bottom legend. Tiny slices are skipped so labels don't collide.
+    const doughnutSurroundLabels = {
+        id: "doughnutSurroundLabels",
+        afterDraw(chart) {
+            if (chart.config.type !== "doughnut") return;
+            if (chart.config.options?.plugins?.doughnutSurroundLabels?.enabled === false) return;
+
+            const { ctx, chartArea } = chart;
+            if (!chartArea) return;
+
+            const meta = chart.getDatasetMeta(0);
+            const dataset = chart.data.datasets[0];
+            const values = dataset.data || [];
+            const total = values.reduce((sum, v) => sum + (Number(v) || 0), 0);
+            if (!total) return;
+
+            ctx.save();
+            ctx.textBaseline = "middle";
+
+            meta.data.forEach((arc, i) => {
+                const value = Number(values[i]) || 0;
+                if (value <= 0) return;
+
+                const rawPct = (value / total) * 100;
+                const pctLabel = rawPct < 1 ? "<1%" : Math.round(rawPct) + "%";
+
+                const { startAngle, endAngle, outerRadius, x: cx, y: cy } = arc;
+                const midAngle = (startAngle + endAngle) / 2;
+                const cos = Math.cos(midAngle);
+                const sin = Math.sin(midAngle);
+
+                // tiny slices get a slightly longer leader so their
+                // labels have room to clear neighboring ones
+                const isTiny = rawPct < 5;
+                const edgeR = outerRadius + 6;
+                const bendR = outerRadius + (isTiny ? 26 : 18);
+
+                const edgeX = cx + cos * edgeR;
+                const edgeY = cy + sin * edgeR;
+                const bendX = cx + cos * bendR;
+                const bendY = cy + sin * bendR;
+
+                const onRight = cos >= 0;
+                const labelX = bendX + (onRight ? 14 : -14);
+                const labelY = bendY;
+
+                const color = Array.isArray(dataset.backgroundColor)
+                    ? dataset.backgroundColor[i]
+                    : dataset.backgroundColor;
+
+                // leader line: ring edge -> bend -> horizontal run to label
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.28)";
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(edgeX, edgeY);
+                ctx.lineTo(bendX, bendY);
+                ctx.lineTo(labelX, labelY);
+                ctx.stroke();
+
+                // small dot at the ring edge, colored to match the slice
+                ctx.fillStyle = color || THEME.ink;
+                ctx.beginPath();
+                ctx.arc(edgeX, edgeY, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // label text: model name on top, percentage dimmed below
+                const name = chart.data.labels[i] ?? "";
+                ctx.textAlign = onRight ? "left" : "right";
+                const textX = labelX + (onRight ? 5 : -5);
+
+                ctx.fillStyle = THEME.ink;
+                ctx.font = "600 11.5px " + THEME.fontBody;
+                ctx.fillText(name, textX, labelY - 6);
+
+                ctx.fillStyle = THEME.mistDim;
+                ctx.font = "500 10.5px " + THEME.fontMono;
+                ctx.fillText(pctLabel, textX, labelY + 7);
+            });
+
+            ctx.restore();
+        },
+    };
+
+    Chart.register(glassRingGlow, doughnutSurroundLabels);
 }
 
 // =====================================================
@@ -239,7 +366,14 @@ function createTokenChart(data) {
 }
 
 // =====================================================
-// MODEL USAGE CHART — soft-cut doughnut
+// MODEL USAGE CHART — glass ring doughnut with surrounding labels
+// Segments are separated (spacing) and rounded so each wedge reads
+// as its own frosted piece of glass, with a soft radial glow behind
+// the ring (glassRingGlow) and model names + percentages labeled
+// around the outside with leader lines (doughnutSurroundLabels).
+// A smaller cutout radius + extra layout padding leaves room for
+// those labels inside the canvas so nothing gets clipped by the
+// glass container's overflow: hidden.
 // =====================================================
 function createModelChart(data) {
     const canvas = document.getElementById("modelUsageChart");
@@ -255,17 +389,33 @@ function createModelChart(data) {
                 {
                     label: "Requests",
                     data: data.map(item => item.total),
-                    backgroundColor: data.map((_, i) => hexToRgba(palette[i % palette.length], 0.85)),
-                    borderColor: "rgba(10, 12, 16, 0.6)",
+                    backgroundColor: data.map((_, i) => hexToRgba(palette[i % palette.length], 0.82)),
+                    hoverBackgroundColor: data.map((_, i) => hexToRgba(palette[i % palette.length], 0.95)),
+                    borderColor: "rgba(255, 255, 255, 0.10)",
                     borderWidth: 2,
-                    hoverOffset: 6,
+                    borderRadius: 8,
+                    spacing: 3,
+                    hoverOffset: 8,
+                    hoverBorderColor: "rgba(255, 255, 255, 0.28)",
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: "68%",
+            cutout: "62%",
+            layout: {
+                padding: {
+                    top: 40,
+                    bottom: 10,
+                    left: 64,
+                    right: 64,
+                },
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: true,
+            },
             plugins: {
                 legend: {
                     position: "bottom",

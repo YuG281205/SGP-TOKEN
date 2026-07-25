@@ -32,6 +32,14 @@
 
   --panel-3: rgba(255, 255, 255, 0.05);
   --ink-dim: #d8d5cd;
+
+  /* Glass surface used behind chart canvases specifically —
+     a touch lighter than the card itself so it reads as an
+     inset pane of glass sitting inside the card's glass. */
+  --chart-glass-bg-top: rgba(255, 255, 255, 0.06);
+  --chart-glass-bg-bottom: rgba(255, 255, 255, 0.02);
+  --chart-glass-border: rgba(255, 255, 255, 0.09);
+  --chart-glass-blur: 16px;
 }
 
 /* ---------- page header ---------- */
@@ -210,7 +218,12 @@
    intrinsic canvas size becomes the track's minimum size — forcing
    the grid (and the whole page) wider than the viewport instead of
    respecting the 1fr columns. min-width: 0 on every level between
-   the grid and the canvas stops that from happening. */
+   the grid and the canvas stops that from happening.
+
+   Each container is now its own inset pane of glass — a subtle
+   top-to-bottom gradient, a soft border, blur, and an inner sheen —
+   so every chart sits on visible frosted glass rather than bare
+   transparent space inside the card. */
 
 .chart-container {
   position: relative;
@@ -218,7 +231,28 @@
   height: 280px;
   min-width: 0;
   overflow: hidden;
+  box-sizing: border-box;
   border-radius: var(--radius-sm);
+  padding: 14px;
+
+  background: linear-gradient(180deg, var(--chart-glass-bg-top), var(--chart-glass-bg-bottom));
+  border: 1px solid var(--chart-glass-border);
+  backdrop-filter: blur(var(--chart-glass-blur));
+  -webkit-backdrop-filter: blur(var(--chart-glass-blur));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -12px 24px -18px rgba(0, 0, 0, 0.5);
+}
+
+/* soft radial sheen, sits behind the canvas, gives the pane a
+   glassy highlight instead of a flat gradient */
+.chart-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 60%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .chart-container--large {
@@ -226,6 +260,8 @@
 }
 
 .chart-container canvas {
+  position: relative;
+  z-index: 1;
   width: 100% !important;
   height: 100% !important;
   max-width: 100%;
