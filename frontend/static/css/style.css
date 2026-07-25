@@ -454,3 +454,23 @@ select {
     transition-duration: 0.001ms !important;
   }
 }
+/* =========================================================
+   CHAR COUNT
+   ========================================================= */
+
+.char-count-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.char-count {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.15s var(--ease-out);
+}
+
+.char-count.is-limit {
+  color: var(--color-primary);
+}

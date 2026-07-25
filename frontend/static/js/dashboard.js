@@ -4,6 +4,30 @@ const username = localStorage.getItem("username");
 document.getElementById("username").innerText = username;
 document.getElementById("welcomeUser").innerText = username;
 
+// =====================================================
+// CHARACTER COUNT
+// =====================================================
+
+function updateCharCount(textareaId, countId) {
+    const textarea = document.getElementById(textareaId);
+    const countEl = document.getElementById(countId);
+    if (!textarea || !countEl) return;
+
+    const len = textarea.value.length;
+    countEl.textContent = `${len} character${len === 1 ? "" : "s"}`;
+}
+
+const promptTextareaEl = document.getElementById("prompt");
+if (promptTextareaEl) {
+    updateCharCount("prompt", "promptCharCount");
+    promptTextareaEl.addEventListener("input", () =>
+        updateCharCount("prompt", "promptCharCount")
+    );
+}
+
+// Initialize the optimized-prompt count on load too
+updateCharCount("optimizedPrompt", "optimizedPromptCharCount");
+
 const optimizeBtn = document.getElementById("optimizeBtn");
 
 optimizeBtn.addEventListener("click", async () => {
@@ -82,6 +106,7 @@ optimizeBtn.addEventListener("click", async () => {
 
             document.getElementById("optimizedPrompt").value =
                 result.optimized_prompt;
+            updateCharCount("optimizedPrompt", "optimizedPromptCharCount");
 
             document.getElementById("originalTotalTokens").textContent =
                 result.original_total_tokens;
@@ -150,6 +175,8 @@ if (clearBtn) {
     clearBtn.addEventListener("click", () => {
         document.getElementById("prompt").value = "";
         document.getElementById("optimizedPrompt").value = "";
+        updateCharCount("prompt", "promptCharCount");
+        updateCharCount("optimizedPrompt", "optimizedPromptCharCount");
     });
 }
 
@@ -189,7 +216,7 @@ const logoutBtn = document.getElementById("logoutBtn");
 
 if (logoutBtn) {
     logoutBtn.addEventListener("click", logout);
-    console.log("Logout button:",logoutBtn);
+    console.log("Logout button:", logoutBtn);
 }
 
 function logout() {
@@ -201,5 +228,3 @@ function logout() {
 
     window.location.href = "/login/";
 }
-
-
