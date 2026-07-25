@@ -1,13 +1,13 @@
 /* =========================================================
    AI Token Optimizer — Shared Navigation
    Brings the dashboard's navbar + sidebar in line with the
-   analytics page. Reuses the tokens already defined in
-   auth-shared.css (--void, --panel, --violet, --teal, etc).
+   glassmorphism theme. Reuses tokens from auth-shared.css
+   (--void, --panel, --amber, --teal, etc).
    Load this AFTER style.css and auth-shared.css.
    ========================================================= */
 
 :root {
-  --panel-border-strong: rgba(140, 130, 255, 0.28);
+  --panel-border-strong: rgba(255, 176, 92, 0.35);
 }
 
 /* ---------- navbar ---------- */
@@ -17,10 +17,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 28px;
-  background: var(--panel);
+  background: rgba(20, 22, 28, 0.4);
   border-bottom: 1px solid var(--panel-border);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
   position: sticky;
   top: 0;
   z-index: 20;
@@ -32,7 +32,7 @@
   font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: var(--violet);
+  color: var(--amber);
   background: none;
   -webkit-background-clip: initial;
   background-clip: initial;
@@ -66,7 +66,7 @@
 }
 
 #logoutBtn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--panel-border-strong);
   color: var(--ink);
   padding: 8px 16px;
@@ -75,20 +75,23 @@
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 13px;
+  backdrop-filter: blur(10px);
   transition: border-color 0.18s var(--ease), background 0.18s var(--ease), color 0.18s var(--ease);
 }
 
 #logoutBtn:hover {
-  background: var(--panel-2);
-  border-color: var(--violet);
-  color: var(--violet);
+  background: rgba(255, 159, 91, 0.12);
+  border-color: var(--amber);
+  color: var(--amber);
 }
 
 /* ---------- sidebar ---------- */
 
 .sidebar {
-  background: var(--panel);
+  background: rgba(255, 255, 255, 0.03);
   border-right: 1px solid var(--panel-border);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 .sidebar ul {
@@ -116,7 +119,7 @@
 }
 
 .sidebar li a:hover {
-  background: var(--panel-2);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--ink);
 }
 
@@ -125,13 +128,13 @@
 }
 
 .sidebar li.active a {
-  background: linear-gradient(135deg, rgba(124, 110, 246, 0.18), rgba(124, 110, 246, 0.05));
+  background: linear-gradient(135deg, rgba(255, 159, 91, 0.20), rgba(255, 159, 91, 0.05));
   color: var(--ink);
   box-shadow: inset 0 0 0 1px var(--panel-border-strong);
 }
 
 .sidebar li.active a i {
-  color: var(--violet);
+  color: var(--amber);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -142,7 +145,7 @@
 }
 
 /* =========================================================
-   MAIN CONTENT — same palette as the navbar/analytics page
+   MAIN CONTENT — same glass palette as the navbar
    ========================================================= */
 
 body {
@@ -151,16 +154,9 @@ body {
   position: relative;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(circle at 12% 8%, var(--violet-glow) 0%, transparent 38%),
-    radial-gradient(circle at 88% 92%, rgba(46, 216, 160, 0.10) 0%, transparent 45%);
-  pointer-events: none;
-  z-index: 0;
-}
+/* body::before / ::after ambient blur backdrop already provided
+   by auth-shared.css / style.css — not redefined here to avoid
+   fighting over the same pseudo-elements. */
 
 .container,
 .content {
@@ -175,11 +171,11 @@ body::before {
 .stats-section .card,
 .result-section,
 .history-section {
-  background: var(--panel);
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--panel-border);
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
 }
 
 .welcome-card p {
@@ -207,7 +203,7 @@ body::before {
 
 textarea,
 select {
-  background: #0b1120;
+  background: rgba(0, 0, 0, 0.22);
   border: 1px solid var(--panel-border);
   color: var(--ink);
 }
@@ -219,8 +215,8 @@ textarea::placeholder {
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: var(--violet);
-  box-shadow: 0 0 0 4px var(--violet-glow);
+  border-color: var(--amber);
+  box-shadow: 0 0 0 4px var(--amber-glow);
 }
 
 textarea[readonly] {
@@ -230,8 +226,9 @@ textarea[readonly] {
 #optimizeBtn,
 #copyBtn,
 #downloadBtn {
-  background: linear-gradient(135deg, var(--violet) 0%, var(--violet-deep) 100%);
-  box-shadow: 0 14px 30px -16px var(--violet-glow);
+  background: linear-gradient(135deg, var(--amber) 0%, var(--amber-deep) 100%);
+  color: #1a1206;
+  box-shadow: 0 14px 30px -16px var(--amber-glow);
   transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease), filter 0.18s var(--ease);
 }
 
@@ -239,7 +236,7 @@ textarea[readonly] {
 #copyBtn:hover,
 #downloadBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 34px -16px var(--violet-glow);
+  box-shadow: 0 18px 34px -16px var(--amber-glow);
   filter: brightness(1.06);
 }
 
@@ -251,6 +248,7 @@ textarea[readonly] {
 }
 
 #clearBtn {
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--panel-border-strong);
   color: var(--mist);
   transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
@@ -258,7 +256,7 @@ textarea[readonly] {
 
 #clearBtn:hover {
   color: var(--ink);
-  border-color: var(--violet);
+  border-color: var(--amber);
 }
 
 .stats-section .card h3 {
