@@ -8,7 +8,7 @@ from apps.comparison1.playwright.browser import (
     LOG_DIR,
 )
 from apps.comparison1.playwright.manager import BrowserManager2
-
+from apps.comparison1.playwright.lock import browser_lock
 
 class NumstackService:
     """
@@ -32,51 +32,53 @@ class NumstackService:
         variant: str | None = None,
         screenshot_name: str = "after_optimize.png",
     ):
-        manager = BrowserManager2()
-        context = manager.start()
+        with browser_lock:
+            print("LOCK ACQUIRED")
+            manager = BrowserManager2()
+            context = manager.start()
 
-        # Needed so we can read back what gets "copied" to the clipboard
-        # instead of scraping fragile, unknown result-card DOM structure.
-        context.grant_permissions(["clipboard-read", "clipboard-write"])
+            # Needed so we can read back what gets "copied" to the clipboard
+            # instead of scraping fragile, unknown result-card DOM structure.
+            context.grant_permissions(["clipboard-read", "clipboard-write"])
 
-        page = context.new_page()
+            page = context.new_page()
 
-        try:
-            page.goto(
-                NUMSTACK_URL,
-                wait_until="domcontentloaded",
-                timeout=TIMEOUT,
-            )
+            try:
+                page.goto(
+                    NUMSTACK_URL,
+                    wait_until="domcontentloaded",
+                    timeout=TIMEOUT,
+                )
 
-            NumstackService._fill_prompt(page, prompt)
-            NumstackService._select_model(page, model)
+                NumstackService._fill_prompt(page, prompt)
+                NumstackService._select_model(page, model)
 
-            optimize_button = page.get_by_role(
-                "button",
-                name=re.compile(r"Optimize Prompt", re.IGNORECASE),
-            )
-            optimize_button.click()
+                optimize_button = page.get_by_role(
+                    "button",
+                    name=re.compile(r"Optimize Prompt", re.IGNORECASE),
+                )
+                optimize_button.click()
 
-            variants = NumstackService._read_all_variants(page, timeout_ms=30000)
+                variants = NumstackService._read_all_variants(page, timeout_ms=30000)
 
-            page.wait_for_timeout(500)
+                page.wait_for_timeout(500)
 
-            screenshot_path = SCREENSHOT_DIR / screenshot_name
-            page.screenshot(path=str(screenshot_path), full_page=True)
+                screenshot_path = SCREENSHOT_DIR / screenshot_name
+                page.screenshot(path=str(screenshot_path), full_page=True)
 
-            log_file = LOG_DIR / "numstack_optimized_prompt.txt"
-            log_file.write_text(
-                "\n\n".join(f"[{name}]\n{text}" for name, text in variants.items()),
-                encoding="utf-8",
-            )
+                log_file = LOG_DIR / "numstack_optimized_prompt.txt"
+                log_file.write_text(
+                    "\n\n".join(f"[{name}]\n{text}" for name, text in variants.items()),
+                    encoding="utf-8",
+                )
 
-            if variant is not None:
-                return variants.get(variant, "")
+                if variant is not None:
+                    return variants.get(variant, "")
 
-            return variants
+                return variants
 
-        finally:
-            manager.stop()
+            finally:
+                manager.stop()
 
     @staticmethod
     def _fill_prompt(page, prompt):

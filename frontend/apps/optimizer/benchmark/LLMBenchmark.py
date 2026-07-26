@@ -81,8 +81,8 @@ class GeminiBenchmark:
             return optimized
 
         tokens_saved = (
-            original["total_tokens"]
-            - optimized["total_tokens"]
+            original["input_tokens"]
+            - optimized["input_tokens"]
         )
 
         processing_time = round(

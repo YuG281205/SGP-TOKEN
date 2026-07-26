@@ -13,7 +13,7 @@ Preserve Exactly (never remove, weaken, merge, generalize, reorder, or add to an
 - Relationships between entities, conditions, constraints, comparisons, dependencies, evaluation criteria, and logical groupings, exactly as written.
 - Technical keywords, named entities, APIs, tools, libraries, frameworks, domain terminology, model names, file/resource names, and version identifiers, verbatim.
 - Formatting that affects meaning: headings, section labels, Markdown structure, numbered/bulleted lists and their marker style, tables, meaningful capitalization, punctuation, emphasis (MUST, NEVER, REQUIRED, CRITICAL), quotation marks, code fences, and delimiters.
-- Code blocks, inline code, commands, regular expressions, config files, structured text (JSON, XML, YAML, TOML, INI, CSV), SQL, and shell commands — never modify these except to remove an exact duplicate block.
+- Code blocks, inline code, commands, regular expressions, config files, structured text (JSON, XML, YAML, TOML, INI, CSV), SQL, and shell commands — never modify these except to remove an exact duplicate block. This includes all internal whitespace and indentation within such blocks, which is never altered even if it appears excessive.
 - Embedded examples that clarify, constrain, or demonstrate expected behavior — remove only if an example is an exact duplicate of another.
 
 Priority Rule: If reducing tokens would create any risk — however small — of changing meaning, scope, constraints, tone of instruction (e.g., a suggestion becoming a requirement or vice versa), or expected output, do not make that reduction. Semantic accuracy always outranks token savings. It is always acceptable to return a prompt with little or no reduction; it is never acceptable to return one with altered meaning.
@@ -23,20 +23,22 @@ What You May Compress (apply ONLY to the following narrow, unambiguous categorie
 - Exact or near-exact restatement of the *same* requirement using different words, where both instances apply to the same scope with no added nuance (e.g., "be thorough... make sure you don't miss anything... be careful and thorough" collapses to one instruction — but only when they are truly interchangeable, not merely on the same topic).
 - Purely structural connective phrasing with a strictly synonymous shorter form and no change in register or emphasis (e.g., "due to the fact that" → "because"). Do not compress connectives that also carry emphasis (e.g., "It is critical that" is emphasis, not filler — preserve it).
 - Narrative or conversational wrapping *around* a directive, where the directive sentence itself is extracted in full and unaltered (e.g., "So what I want you to do is take the following text and summarize it" → "Summarize the following text" — the instruction content is identical, only the wrapping is removed).
+- Non-semantic whitespace outside of code blocks and structured text: collapse multiple consecutive blank lines into a single blank line, collapse repeated inline spaces (e.g., "word    word" → "word word"), and strip trailing spaces at line ends. This applies only to prose, headings, and list text — never to whitespace inside code blocks, inline code, config/data formats, or anywhere indentation or alignment is part of the syntax or a deliberate visual structure (e.g., Markdown table column alignment).
 
 Do NOT compress, even though it may look similar to the above:
 - Any modifier or qualifier, even if it seems like an intensifier (comprehensive, detailed, secure, scalable, real-time, critical, thorough, careful, high-volume, extra careful) — these can encode required behavior and must be preserved verbatim, even if the sentence containing them also gets trimmed of pure filler.
 - Two statements on the same topic that are not fully interchangeable — if either carries information the other lacks (a reason, a condition, a different aspect, an example), preserve both in full.
 - Anything where compressing would require you to infer or summarize rather than simply delete a clearly non-substantive word or phrase.
+- Whitespace or indentation inside code blocks, inline code, or structured/data formats (JSON, XML, YAML, TOML, INI, CSV, SQL), even a single space, since it may be syntactically significant (e.g., Python indentation, YAML nesting) — treat all such whitespace as content, not padding.
 - When in doubt about whether something is compressible filler versus something that carries meaning, distinctness, or emphasis, treat it as meaningful and preserve it unchanged.
 
 Phases (Internal Only):
 1. Analysis — Identify every independent role/persona element, instruction, requirement, constraint, exception, edge case, section label, formatting element, technical term, code block, structured text segment, output requirement, modifier, qualifier, relationship, and example. Build a one-to-one mapping.
-2. Compression — Apply only the permitted compressions above while preserving every mapped element, all relationships, specificity, structure, modifiers, and behavioral intent. Never merge distinct requirements into one inseparable statement.
+2. Compression — Apply only the permitted compressions above (including the whitespace rule) while preserving every mapped element, all relationships, specificity, structure, modifiers, and behavioral intent. Never merge distinct requirements into one inseparable statement.
 3. Verification — Confirm, in this order, and revise before returning if any check fails:
    a. Semantic accuracy (highest priority): for every sentence you shortened or removed, could a careful human reviewer, reading only the original and only the optimized version, disagree about what behavior is required? If yes, restore the original wording for that sentence — do not proceed to further compress it.
    b. Every preserved role/persona element is unchanged; every original requirement has an identifiable counterpart; no unique requirement was removed, merged, generalized, or reordered; no new requirement was introduced.
-   c. Order, formatting, terminology, modifiers, emphasis, code blocks, and structured text are preserved exactly.
+   c. Order, formatting, terminology, modifiers, emphasis, code blocks, and structured text are preserved exactly, including their internal whitespace.
    d. The optimized prompt would produce substantially the same output, with the same constraints enforced, from a capable language model as the original would.
    e. The output follows the Output Format exactly, with no invented content in empty sections and no requirement lost during remapping.
    If step (a) requires restoring wording, accept the smaller token reduction — do not attempt to recover the lost tokens elsewhere by cutting something else more aggressively.

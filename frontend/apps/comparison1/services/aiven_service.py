@@ -8,7 +8,7 @@ from apps.comparison1.playwright.browser import (
     LOG_DIR,
 )
 from apps.comparison1.playwright.manager import BrowserManager
-
+from apps.comparison1.playwright.lock import browser_lock
 
 class AivenService:
 
@@ -17,51 +17,52 @@ class AivenService:
         prompt: str,
         screenshot_name: str = "after_optimize.png",
     ) -> str:
+        with browser_lock:
+            print("LOCK ACQUIRED...")
+            manager = BrowserManager()
+            context = manager.start()
+            page = context.new_page()
 
-        manager = BrowserManager()
-        context = manager.start()
-        page = context.new_page()
+            try:
+                page.goto(
+                    AIVEN_URL,
+                    wait_until="domcontentloaded",
+                    timeout=TIMEOUT,
+                )
 
-        try:
-            page.goto(
-                AIVEN_URL,
-                wait_until="domcontentloaded",
-                timeout=TIMEOUT,
-            )
+                AivenService._dismiss_cookie_banner(page)
+                AivenService._type_into_monaco(page, prompt)
 
-            AivenService._dismiss_cookie_banner(page)
-            AivenService._type_into_monaco(page, prompt)
+                optimize_button = page.get_by_role(
+                    "button",
+                    name=re.compile("Optimize prompt", re.IGNORECASE),
+                )
 
-            optimize_button = page.get_by_role(
-                "button",
-                name=re.compile("Optimize prompt", re.IGNORECASE),
-            )
+                optimize_button.click()
 
-            optimize_button.click()
+                # Wait for the button to enter a "working" state and then
+                # come back — this is a real completion signal instead of
+                # guessing from rendered text.
+                AivenService._wait_for_button_idle(page, optimize_button)
 
-            # Wait for the button to enter a "working" state and then
-            # come back — this is a real completion signal instead of
-            # guessing from rendered text.
-            AivenService._wait_for_button_idle(page, optimize_button)
+                optimized_prompt = AivenService._get_full_editor_text(
+                    page,
+                    editor_index=-1,
+                    timeout_ms=30000,
+                )
 
-            optimized_prompt = AivenService._get_full_editor_text(
-                page,
-                editor_index=-1,
-                timeout_ms=30000,
-            )
+                page.wait_for_timeout(500)
 
-            page.wait_for_timeout(500)
+                screenshot_path = SCREENSHOT_DIR / screenshot_name
+                page.screenshot(path=str(screenshot_path), full_page=True)
 
-            screenshot_path = SCREENSHOT_DIR / screenshot_name
-            page.screenshot(path=str(screenshot_path), full_page=True)
+                log_file = LOG_DIR / "optimized_prompt.txt"
+                log_file.write_text(optimized_prompt, encoding="utf-8")
 
-            log_file = LOG_DIR / "optimized_prompt.txt"
-            log_file.write_text(optimized_prompt, encoding="utf-8")
+                return optimized_prompt
 
-            return optimized_prompt
-
-        finally:
-            manager.stop()
+            finally:
+                manager.stop()
 
     @staticmethod
     def _dismiss_cookie_banner(page):

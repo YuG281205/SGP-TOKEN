@@ -9,7 +9,7 @@ from apps.comparison1.playwright.browser import (
     LOG_DIR,
 )
 from apps.comparison1.playwright.manager import BrowserManager1
-
+from apps.comparison1.playwright.lock import browser_lock
 
 class PromptGeneratorService:
 
@@ -18,43 +18,43 @@ class PromptGeneratorService:
         prompt: str,
         screenshot_name: str = "after_optimize.png",
     ) -> str:
+        with browser_lock:
+            manager = BrowserManager1()
+            context = manager.start()
+            page = context.new_page()
 
-        manager = BrowserManager1()
-        context = manager.start()
-        page = context.new_page()
+            try:
+                page.goto(
+                    FREE_PROMPT_GENERATOR,
+                    wait_until="domcontentloaded",
+                    timeout=TIMEOUT,
+                )
 
-        try:
-            page.goto(
-                FREE_PROMPT_GENERATOR,
-                wait_until="domcontentloaded",
-                timeout=TIMEOUT,
-            )
+                PromptGeneratorService._fill_prompt(page, prompt)
 
-            PromptGeneratorService._fill_prompt(page, prompt)
+                optimized_prompt = PromptGeneratorService._get_result_text(
+                    page,
+                    timeout_ms=60000,
+                )
 
-            optimized_prompt = PromptGeneratorService._get_result_text(
-                page,
-                timeout_ms=60000,
-            )
+                page.wait_for_timeout(500)
 
-            page.wait_for_timeout(500)
+                screenshot_path = SCREENSHOT_DIR / screenshot_name
+                page.screenshot(
+                    path=str(screenshot_path),
+                    full_page=True,
+                )
 
-            screenshot_path = SCREENSHOT_DIR / screenshot_name
-            page.screenshot(
-                path=str(screenshot_path),
-                full_page=True,
-            )
+                log_file = LOG_DIR / "prompt_generator_optimized_prompt.txt"
+                log_file.write_text(
+                    optimized_prompt or "",
+                    encoding="utf-8",
+                )
 
-            log_file = LOG_DIR / "prompt_generator_optimized_prompt.txt"
-            log_file.write_text(
-                optimized_prompt or "",
-                encoding="utf-8",
-            )
+                return optimized_prompt
 
-            return optimized_prompt
-
-        finally:
-            manager.stop()
+            finally:
+                manager.stop()
 
     @staticmethod
     def _fill_prompt(page, prompt):
