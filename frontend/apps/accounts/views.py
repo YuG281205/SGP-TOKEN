@@ -45,3 +45,6 @@ def prompt_analysis_view(request):
 
 def comparison_view(request):
     return render(request,"accounts/comparison.html")
+
+def index(request):
+    return render(request,"accounts/index.html")
