@@ -20,8 +20,13 @@ document.getElementById('signupform').addEventListener("submit",async function (
     const data = await response.json();
 
     if (response.ok) {
-    alert("Registration Successful");
-    window.location.href = "/check_email/";
+    alert("Registration Successful! Please verify your email.");
+
+    window.open("https://mail.google.com/", "_blank");
+
+    setTimeout(() => {
+        window.location.href = "/check_email/";
+    }, 1000);
 } else {
 
     if (data.username) {
