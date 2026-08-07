@@ -395,17 +395,17 @@ class OptimizerService:
         daemon=True,
         ).start()
 
-        Thread(
-                target=PromptGeneratorComparisonService.compare,
-                args=(history.id,),
-                daemon=True,
-                ).start()
+        # Thread(
+        #         target=PromptGeneratorComparisonService.compare,
+        #         args=(history.id,),
+        #         daemon=True,
+        #         ).start()
 
-        Thread(
-            target=NumstackComparisonService.compare,
-            args=(history.id,),
-            daemon=True,
-        ).start()
+        # Thread(
+        #     target=NumstackComparisonService.compare,
+        #     args=(history.id,),
+        #     daemon=True,
+        # ).start()
         
         return {
 

@@ -10,6 +10,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/token-optimizer.css' %}">
+<link rel="stylesheet" href="{% static 'css/text-spotlight.css' %}">
+
 </head>
 <body>
 
@@ -32,6 +34,11 @@
 
 <!-- HERO -->
 <section class="lp-hero" id="lpHero">
+  <div class="lp-hero__depth" aria-hidden="true">
+  <span class="lp-orbit lp-orbit--one"></span>
+  <span class="lp-orbit lp-orbit--two"></span>
+  <span class="lp-cube"><i></i><i></i><i></i></span>
+</div>
   <div class="lp-hero__spotlight" id="lpSpotlight"></div>
 
   <div class="lp-hero__eyebrow">Prompt optimization, before it costs you</div>
@@ -217,6 +224,9 @@
 </footer>
 
 <script src="{% static 'js/token-optimizer.js' %}" defer></script>
+<script src="{% static 'js/text-spotlight.js' %}" defer></script>
+
+
 
 </body>
 </html>
